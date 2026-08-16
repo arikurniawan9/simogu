@@ -2,6 +2,7 @@
   "name": "simogu-monorepo",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@11.1.2",
   "scripts": {
     "dev": "pnpm --parallel --filter \"@simogu/*\" dev",
     "build": "pnpm --recursive run build",
