@@ -1,0 +1,358 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  PIKET
+  GURU
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum SemesterType {
+  ODD
+  EVEN
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT_PENDING_CONFIRMATION
+  PERMISSION
+  SICK
+  OFFICIAL_DUTY
+  LATE
+  WITHOUT_EXPLANATION
+  CANCELLED
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum WhatsAppStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+model User {
+  id           String    @id @default(uuid())
+  username     String    @unique
+  email        String?   @unique
+  passwordHash String
+  fullName     String
+  role         Role      @default(PIKET)
+  teacherId    String?   @unique
+  isActive     Boolean   @default(true)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  teacher                           Teacher?                  @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  refreshTokens                     RefreshToken[]
+  attendanceRecordsRecorded         AttendanceRecord[]        @relation("RecordedBy")
+  attendanceStatusHistoriesChanged  AttendanceStatusHistory[] @relation("ChangedBy")
+  attendanceChangeRequestsSubmitted AttendanceChangeRequest[] @relation("RequestedBy")
+  attendanceChangeRequestsReviewed  AttendanceChangeRequest[] @relation("ReviewedBy")
+  notifications                     Notification[]
+  auditLogs                         AuditLog[]
+
+  @@index([username])
+  @@index([role])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String
+  isRevoked Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model Teacher {
+  id             String    @id @default(uuid())
+  teacherCode    String    @unique
+  nip            String?
+  fullName       String
+  gender         Gender
+  whatsappNumber String
+  subject        String
+  photoUrl       String?
+  isActive       Boolean   @default(true)
+  deletedAt      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user             User?
+  homeroomClasses  Class[]           @relation("HomeroomTeacher")
+  schedules        Schedule[]
+  whatsappMessages WhatsAppMessage[]
+
+  @@index([teacherCode])
+  @@index([fullName])
+}
+
+model Class {
+  id                String    @id @default(uuid())
+  name              String
+  grade             String
+  major             String?
+  homeroomTeacherId String?
+  isActive          Boolean   @default(true)
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  homeroomTeacher Teacher?   @relation("HomeroomTeacher", fields: [homeroomTeacherId], references: [id], onDelete: SetNull)
+  schedules       Schedule[]
+
+  @@index([name])
+}
+
+model LessonPeriod {
+  id           String     @id @default(uuid())
+  periodNumber Int
+  startTime    String
+  endTime      String
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  schedules Schedule[]
+
+  @@index([periodNumber])
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  semesters Semester[]
+}
+
+model Semester {
+  id             String       @id @default(uuid())
+  academicYearId String
+  name           String
+  type           SemesterType
+  startDate      DateTime
+  endDate        DateTime
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  academicYear AcademicYear @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  schedules    Schedule[]
+
+  @@index([academicYearId])
+}
+
+model SchoolHoliday {
+  id          String   @id @default(uuid())
+  name        String
+  date        DateTime
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([date])
+}
+
+model Schedule {
+  id              String    @id @default(uuid())
+  teacherId       String
+  classId         String
+  lessonPeriodId  String
+  semesterId      String
+  dayOfWeek       DayOfWeek
+  subject         String
+  periodValidFrom DateTime
+  periodValidTo   DateTime
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  teacher           Teacher            @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  class             Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+  lessonPeriod      LessonPeriod       @relation(fields: [lessonPeriodId], references: [id], onDelete: Cascade)
+  semester          Semester           @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  attendanceRecords AttendanceRecord[]
+
+  @@index([teacherId, dayOfWeek])
+  @@index([classId, dayOfWeek])
+  @@index([semesterId])
+}
+
+model AttendanceRecord {
+  id             String           @id @default(uuid())
+  scheduleId     String
+  attendanceDate DateTime
+  status         AttendanceStatus
+  recordedById   String
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  schedule        Schedule                  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  recordedBy      User                      @relation("RecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+  statusHistories AttendanceStatusHistory[]
+  changeRequests  AttendanceChangeRequest[]
+  whatsappMessages WhatsAppMessage[]
+
+  @@unique([scheduleId, attendanceDate])
+  @@index([attendanceDate])
+  @@index([status])
+}
+
+model AttendanceStatusHistory {
+  id                 String            @id @default(uuid())
+  attendanceRecordId String
+  previousStatus     AttendanceStatus?
+  newStatus          AttendanceStatus
+  changedById        String
+  reason             String
+  createdAt          DateTime          @default(now())
+
+  attendanceRecord AttendanceRecord @relation(fields: [attendanceRecordId], references: [id], onDelete: Cascade)
+  changedBy        User             @relation("ChangedBy", fields: [changedById], references: [id], onDelete: Restrict)
+
+  @@index([attendanceRecordId])
+}
+
+model AttendanceChangeRequest {
+  id                 String              @id @default(uuid())
+  attendanceRecordId String
+  requestedById      String
+  currentStatus      AttendanceStatus
+  requestedStatus    AttendanceStatus
+  reason             String
+  status             ChangeRequestStatus @default(PENDING)
+  reviewedById       String?
+  reviewedAt         DateTime?
+  reviewNotes        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  attendanceRecord AttendanceRecord          @relation(fields: [attendanceRecordId], references: [id], onDelete: Cascade)
+  requestedBy      User                      @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  reviewedBy       User?                     @relation("ReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  attachments      ChangeRequestAttachment[]
+
+  @@index([attendanceRecordId])
+  @@index([status])
+}
+
+model ChangeRequestAttachment {
+  id              String   @id @default(uuid())
+  changeRequestId String
+  fileUrl         String
+  fileType        String
+  fileSize        Int
+  createdAt       DateTime @default(now())
+
+  changeRequest AttendanceChangeRequest @relation(fields: [changeRequestId], references: [id], onDelete: Cascade)
+
+  @@index([changeRequestId])
+}
+
+model WhatsAppMessage {
+  id                 String         @id @default(uuid())
+  attendanceRecordId String?
+  teacherId          String
+  recipientPhone     String
+  messageBody        String
+  status             WhatsAppStatus @default(PENDING)
+  failureReason      String?
+  sentAt             DateTime?
+  createdAt          DateTime       @default(now())
+
+  attendanceRecord AttendanceRecord? @relation(fields: [attendanceRecordId], references: [id], onDelete: SetNull)
+  teacher          Teacher           @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId])
+  @@index([status])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  oldValues Json?
+  newValues Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}

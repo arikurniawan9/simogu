@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: simogu-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: simogu_user
+      POSTGRES_PASSWORD: simogu_password_secret
+      POSTGRES_DB: simogu_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U simogu_user -d simogu_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: simogu-api
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://simogu_user:simogu_password_secret@postgres:5432/simogu_db?schema=public"
+      JWT_SECRET: "simogu_jwt_secret_production_key_123"
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: simogu-web
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:3001/api/v1"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

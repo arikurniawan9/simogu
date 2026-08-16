@@ -1,0 +1,25 @@
+# Security Checklist
+
+- [ ] Password menggunakan Argon2 atau bcrypt.
+- [ ] Refresh token disimpan sebagai hash.
+- [ ] Access token berumur pendek.
+- [ ] Role guard pada semua endpoint privat.
+- [ ] Rate limiting login.
+- [ ] Rate limiting portal publik.
+- [ ] Input validation frontend dan backend.
+- [ ] Proteksi XSS.
+- [ ] Proteksi CSRF bila menggunakan cookie.
+- [ ] CORS dibatasi.
+- [ ] Helmet/security headers aktif.
+- [ ] File upload divalidasi tipe dan ukuran.
+- [ ] Secret hanya melalui environment variables.
+- [ ] Log tidak memuat password, token, atau credential.
+- [ ] Nomor WhatsApp tidak tampil publik.
+- [ ] Audit log untuk aktivitas sensitif.
+- [ ] SQL injection dicegah melalui Prisma dan validasi.
+- [ ] Error produksi tidak membocorkan stack trace.
+- [ ] Backup dan restore database diuji.
+- [ ] Dependency scanning dijalankan.
+- [ ] Default account wajib mengganti password.
+- [ ] Endpoint approval terlindungi dari race condition.
+- [ ] Public identifier tidak mudah ditebak.

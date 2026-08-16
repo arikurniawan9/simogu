@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply text-slate-800 dark:text-slate-100 transition-colors duration-500 antialiased min-h-screen relative overflow-x-hidden;
+    /* Light Mode: Animated white to light green background */
+    background: linear-gradient(-45deg, #ffffff, #f0fdf4, #e4f7ed, #d1fae5, #ffffff);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+  }
+
+  /* Dark Mode: Soft charcoal black (hitam muda) blended with emerald green */
+  html.dark body,
+  .dark body {
+    background: linear-gradient(-45deg, #121916, #16241e, #1c3228, #14201a, #121916) !important;
+    background-size: 400% 400%;
+    animation: gradientShift 18s ease infinite;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Floating Light Green Ambient Glow Blobs */
+.ambient-blob-1 {
+  position: fixed;
+  top: -10%;
+  left: -5%;
+  width: 50vw;
+  height: 50vw;
+  max-width: 600px;
+  max-height: 600px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.25) 0%, rgba(167, 243, 208, 0.08) 50%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  filter: blur(65px);
+  animation: floatBlob1 18s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-blob-2 {
+  position: fixed;
+  bottom: 5%;
+  right: -5%;
+  width: 55vw;
+  height: 55vw;
+  max-width: 650px;
+  max-height: 650px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(209, 250, 229, 0.1) 50%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 50%;
+  filter: blur(75px);
+  animation: floatBlob2 22s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dark mode blob override for subtle emerald glow over soft charcoal black */
+html.dark .ambient-blob-1,
+.dark .ambient-blob-1 {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.04) 50%, rgba(0, 0, 0, 0) 70%);
+}
+
+html.dark .ambient-blob-2,
+.dark .ambient-blob-2 {
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.15) 0%, rgba(4, 120, 87, 0.04) 50%, rgba(0, 0, 0, 0) 70%);
+}
+
+@keyframes floatBlob1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(80px, 60px) scale(1.15);
+  }
+  100% {
+    transform: translate(-40px, 120px) scale(0.95);
+  }
+}
+
+@keyframes floatBlob2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-90px, -70px) scale(1.2);
+  }
+  100% {
+    transform: translate(50px, -110px) scale(0.9);
+  }
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+  @apply bg-white/85 dark:bg-surface-cardDark/85 backdrop-blur-xl border border-brand-100/70 dark:border-surface-borderDark shadow-xl shadow-brand-950/5 transition-all duration-300;
+}
