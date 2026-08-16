@@ -5,7 +5,14 @@ RUN npm install -g pnpm@11.1.2
 FROM base AS builder
 WORKDIR /app
 COPY . .
-RUN pnpm install --no-frozen-lockfile
+RUN echo "=== DEBUG INFO ===" && \
+    echo "Node: $(node -v)" && \
+    echo "pnpm: $(pnpm -v)" && \
+    echo "=== .npmrc ===" && \
+    cat .npmrc 2>/dev/null || echo "no .npmrc" && \
+    echo "=== Installing ===" && \
+    pnpm install --no-frozen-lockfile 2>&1 || \
+    (echo "=== PNPM FAILED ===" && cat /tmp/pnpm-debug.log 2>/dev/null && exit 1)
 
 # Build-time env for Next.js (will be overridden by Coolify env vars)
 ARG NEXT_PUBLIC_API_URL
