@@ -8,15 +8,30 @@ FROM base AS builder
 WORKDIR /app
 COPY . .
 RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @simogu/api run prisma:generate
 RUN pnpm --filter @simogu/api build
 
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Copy built API
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/package.json ./apps/api/package.json
-COPY --from=builder /app/packages/database ./packages/database
+
+# Copy Prisma schema and migrations for runtime migrate
+COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
+
+# Copy generated Prisma client and node_modules
+COPY --from=builder /app/node_modules ./node_modules
+
+# Copy entrypoint script
+COPY --from=builder /app/scripts/entrypoint-api.sh ./entrypoint-api.sh
+RUN chmod +x ./entrypoint-api.sh
 
 EXPOSE 3001
-CMD ["node", "apps/api/dist/main.js"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/api/v1/health || exit 1
+
+ENTRYPOINT ["./entrypoint-api.sh"]
