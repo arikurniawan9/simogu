@@ -1,7 +1,7 @@
 # Multi-stage Dockerfile for NestJS API
 FROM node:20-bookworm-slim AS base
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl && rm -rf /var/lib/apt/lists/*
-RUN npm install -g pnpm@11.1.2
+RUN npm install -g pnpm@9.15.4
 
 FROM base AS builder
 WORKDIR /app
