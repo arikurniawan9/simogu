@@ -40,7 +40,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || process.env.API_PORT || 3001;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 SIMOGU API is running on: http://localhost:${port}/api/v1`);
   console.log(`📚 Swagger Docs available at: http://localhost:${port}/api/docs`);
 }
