@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for NestJS API
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat openssl
+FROM node:20-bookworm-slim AS base
+RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl && rm -rf /var/lib/apt/lists/*
 RUN npm install -g pnpm@11.1.2
 
 FROM base AS builder
@@ -32,6 +32,6 @@ RUN chmod +x ./entrypoint-api.sh
 EXPOSE 3001
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/api/v1/health || exit 1
+  CMD curl -f http://localhost:3001/api/v1/health || exit 1
 
 ENTRYPOINT ["./entrypoint-api.sh"]
