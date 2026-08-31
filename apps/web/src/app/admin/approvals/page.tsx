@@ -100,7 +100,7 @@ export default function AdminApprovalsPage() {
       setRequests((prev) => {
         const next = prev.map((r) =>
           r.id === targetReq.id
-            ? { ...r, status: actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED' }
+            ? { ...r, status: (actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED') as 'APPROVED' | 'REJECTED' }
             : r,
         );
         // Save back to localStorage if it was a piket request
@@ -110,7 +110,7 @@ export default function AdminApprovalsPage() {
             let parsed = JSON.parse(stored) as ChangeRequestItem[];
             parsed = parsed.map((r) => 
               r.id === targetReq.id 
-                ? { ...r, status: actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED' } 
+                ? { ...r, status: (actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED') as 'APPROVED' | 'REJECTED' } 
                 : r
             );
             localStorage.setItem('simogu_edit_requests', JSON.stringify(parsed));

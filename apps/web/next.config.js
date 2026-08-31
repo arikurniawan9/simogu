@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@simogu/types'],
-  output: 'standalone',
+  output: process.env.NEXT_STANDALONE ? 'standalone' : undefined,
   async rewrites() {
     const apiUrl = process.env.INTERNAL_API_URL || 'http://localhost:3001';
     return [
