@@ -1,11 +1,13 @@
 # Multi-stage Dockerfile for NestJS API
 FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat openssl
 RUN npm install -g pnpm@11.1.2
 
 FROM base AS builder
 WORKDIR /app
+ENV NODE_ENV=development
 COPY . .
-RUN pnpm install --no-frozen-lockfile
+RUN pnpm install --no-frozen-lockfile --prod=false
 RUN pnpm --filter @simogu/api run prisma:generate
 RUN pnpm --filter @simogu/api build
 
