@@ -8,4 +8,8 @@ echo "✅ Migrations complete"
 
 echo "🚀 Starting SIMOGU API..."
 cd /app
-exec node apps/api/dist/main.js
+if [ -f apps/api/dist/src/main.js ]; then
+  exec node apps/api/dist/src/main.js
+else
+  exec node apps/api/dist/main.js
+fi
