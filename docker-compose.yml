@@ -22,9 +22,10 @@ services:
       dockerfile: Dockerfile.api
     restart: always
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-simogu_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-simogu_db}?schema=public
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-simogu_db}?schema=public
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_access_token_key_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-super_secret_jwt_refresh_token_key_change_in_production}
+
       JWT_EXPIRATION: ${JWT_EXPIRATION:-15m}
       JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
       PORT: 3001

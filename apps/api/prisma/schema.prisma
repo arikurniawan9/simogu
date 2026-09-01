@@ -18,6 +18,14 @@ enum Role {
   KETUA_PIKET
   PIKET
   GURU
+  PIKET_PENGAJIAN
+  KETUA_PIKET_PENGAJIAN
+}
+
+enum PengajianSession {
+  PAGI
+  ASHAR
+  MAGHRIB
 }
 
 enum Gender {
@@ -89,6 +97,7 @@ model User {
   attendanceChangeRequestsReviewed  AttendanceChangeRequest[] @relation("ReviewedBy")
   notifications                     Notification[]
   auditLogs                         AuditLog[]
+  pengajianAttendanceRecorded       PengajianAttendance[]     @relation("PengajianAttendanceRecordedBy")
 
   @@index([username])
   @@index([role])
@@ -126,6 +135,7 @@ model Teacher {
   homeroomClasses  Class[]           @relation("HomeroomTeacher")
   schedules        Schedule[]
   whatsappMessages WhatsAppMessage[]
+  pengajianSchedules PengajianSchedule[]
 
   @@index([teacherCode])
   @@index([fullName])
@@ -358,3 +368,69 @@ model SystemSetting {
 
   @@index([key])
 }
+
+// ==========================================
+// PENGAJIAN PESANTREN (BOARDING SCHOOL) MODULE
+// ==========================================
+
+model PengajianClass {
+  id          String    @id @default(uuid())
+  name        String    // e.g. "Halaqah Al-Jurumiyah A", "Sorogan Fathul Qorib", "Tahfidz Putra 1"
+  category    String    // "Kitab Kuning", "Tahfidz", "Sorogan", "Bandongan", "Diniyah"
+  location    String?   // "Masjid Utama Lt. 1", "Asrama Umar bin Khattab", "Gedung Diniyah A"
+  description String?
+  isActive    Boolean   @default(true)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  schedules   PengajianSchedule[]
+
+  @@index([name])
+  @@index([category])
+}
+
+model PengajianSchedule {
+  id               String           @id @default(uuid())
+  pengajianClassId String
+  teacherId        String           // Ustadz / Guru Pengampu
+  session          PengajianSession // PAGI, ASHAR, MAGHRIB
+  dayOfWeek        DayOfWeek        // MONDAY .. SUNDAY
+  kitab            String           // e.g. "Kitab Fathul Qorib", "Jurumiyah", "Safinatun Najah", "Juz 30"
+  timeSlot         String?          // e.g. "05:30 - 06:30", "16:00 - 17:00", "18:30 - 19:45"
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  pengajianClass   PengajianClass        @relation(fields: [pengajianClassId], references: [id], onDelete: Cascade)
+  teacher          Teacher               @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  attendances      PengajianAttendance[]
+
+  @@index([pengajianClassId])
+  @@index([teacherId])
+  @@index([session])
+  @@index([dayOfWeek])
+}
+
+model PengajianAttendance {
+  id                  String           @id @default(uuid())
+  pengajianScheduleId String
+  attendanceDate      DateTime
+  session             PengajianSession
+  status              AttendanceStatus
+  badalTeacherId      String?          // Ustadz Badal / Pengganti jika status BADAL/IZIN
+  badalTeacherName    String?          // Nama ustadz pengganti jika dari luar
+  notes               String?
+  recordedById        String
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  schedule            PengajianSchedule @relation(fields: [pengajianScheduleId], references: [id], onDelete: Cascade)
+  recordedBy          User              @relation("PengajianAttendanceRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+
+  @@unique([pengajianScheduleId, attendanceDate])
+  @@index([attendanceDate])
+  @@index([session])
+  @@index([status])
+}
+

@@ -1,7 +1,18 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const PROTECTED_PREFIXES = ['/admin', '/piket', '/ketua-piket', '/superadmin', '/settings'];
+const PROTECTED_PREFIXES = [
+  '/admin',
+  '/piket',
+  '/ketua-piket',
+  '/superadmin',
+  '/settings',
+  '/pengajian/dashboard',
+  '/pengajian/attendance',
+  '/pengajian/classes',
+  '/pengajian/teachers',
+  '/pengajian/schedules',
+];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

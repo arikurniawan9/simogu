@@ -22,7 +22,9 @@ import {
   Moon,
   Sun,
   Shield,
+  BookOpen,
 } from 'lucide-react';
+
 import { useTheme } from 'next-themes';
 
 interface NavItem {
@@ -109,6 +111,25 @@ export function BottomNav() {
 
     const role = (userRole || '').toUpperCase();
 
+    if (role === 'KETUA_PIKET_PENGAJIAN' || role.includes('KETUA_PENG')) {
+      return [
+        { label: 'Dashboard', href: '/pengajian/dashboard', icon: Home },
+        { label: 'Absensi', href: '/pengajian/attendance', icon: ClipboardCheck },
+        { label: 'Halaqah', href: '/pengajian/classes', icon: Building2 },
+        { label: 'Ustadz', href: '/pengajian/teachers', icon: UserCheck },
+        { label: 'Jadwal', href: '/pengajian/schedules', icon: Calendar },
+      ];
+    }
+
+    if (role === 'PIKET_PENGAJIAN' || role.includes('PIKET_PENG')) {
+      return [
+        { label: 'Absensi', href: '/pengajian/attendance', icon: ClipboardCheck },
+        { label: 'Dashboard', href: '/pengajian/dashboard', icon: Home },
+        { label: 'Jadwal', href: '/pengajian/schedules', icon: Calendar },
+        { label: 'Profil', href: '/settings/profile', icon: User },
+      ];
+    }
+
     if (role === 'KETUA_PIKET') {
       return [
         { label: 'Dashboard', href: '/ketua-piket/dashboard', icon: Home },
@@ -118,6 +139,7 @@ export function BottomNav() {
         { label: 'Profil', href: '/settings/profile', icon: User },
       ];
     }
+
 
     if (role === 'PIKET') {
       return [
@@ -365,6 +387,23 @@ export function BottomNav() {
                 <div>
                   <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Laporan Presensi</div>
                   <div className="text-[10px] text-slate-500">Ekspor & Cetak</div>
+                </div>
+              </Link>
+
+              <Link
+                href="/pengajian/dashboard"
+                onClick={() => setMenuDrawerOpen(false)}
+                className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 hover:border-emerald-500 flex items-center gap-3 transition-all col-span-2"
+              >
+                <div className="p-2 rounded-lg bg-emerald-600 text-white shadow-xs">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
+                    <span>🕌 Pengajian Pesantren</span>
+                    <span className="text-[10px] font-normal px-1.5 py-0.2 rounded bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200">3 Sesi Waktu</span>
+                  </div>
+                  <div className="text-[10px] text-emerald-700 dark:text-emerald-400">Presensi PAGI, ASHAR, MAGHRIB & Halaqah</div>
                 </div>
               </Link>
 

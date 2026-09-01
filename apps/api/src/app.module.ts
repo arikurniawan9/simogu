@@ -13,6 +13,7 @@ import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportsModule } from './reports/reports.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PengajianModule } from './pengajian/pengajian.module';
 
 @Module({
   imports: [
@@ -29,8 +30,10 @@ import { NotificationsModule } from './notifications/notifications.module';
     DashboardModule,
     ReportsModule,
     NotificationsModule,
+    PengajianModule,
   ],
   controllers: [HealthController],
   providers: [],
 })
 export class AppModule {}
+

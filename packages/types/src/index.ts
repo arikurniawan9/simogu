@@ -4,6 +4,14 @@ export enum UserRole {
   KETUA_PIKET = 'KETUA_PIKET',
   PIKET = 'PIKET',
   GURU = 'GURU',
+  PIKET_PENGAJIAN = 'PIKET_PENGAJIAN',
+  KETUA_PIKET_PENGAJIAN = 'KETUA_PIKET_PENGAJIAN',
+}
+
+export enum PengajianSession {
+  PAGI = 'PAGI',
+  ASHAR = 'ASHAR',
+  MAGHRIB = 'MAGHRIB',
 }
 
 export enum AttendanceStatus {
@@ -59,3 +67,39 @@ export interface SystemHealthStatus {
   timestamp: string;
   uptime: number;
 }
+
+export interface PengajianClassItem {
+  id: string;
+  name: string;
+  category: string;
+  location?: string | null;
+  description?: string | null;
+  isActive: boolean;
+}
+
+export interface PengajianScheduleItem {
+  id: string;
+  pengajianClassId: string;
+  teacherId: string;
+  session: PengajianSession;
+  dayOfWeek: string;
+  kitab: string;
+  timeSlot?: string | null;
+  isActive: boolean;
+  pengajianClass?: PengajianClassItem;
+  teacher?: TeacherSummary;
+}
+
+export interface PengajianAttendanceItem {
+  id: string;
+  pengajianScheduleId: string;
+  attendanceDate: string;
+  session: PengajianSession;
+  status: AttendanceStatus;
+  badalTeacherId?: string | null;
+  badalTeacherName?: string | null;
+  notes?: string | null;
+  recordedById: string;
+  schedule?: PengajianScheduleItem;
+}
+

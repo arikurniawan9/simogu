@@ -74,7 +74,30 @@ class ApiClient {
     }
   }
 
+  async put<T = any>(endpoint: string, body?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'PUT',
+        headers: this.getHeaders(options.headers as Record<string, string>),
+        body: body ? JSON.stringify(body) : undefined,
+        ...options,
+      });
+
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      return {
+        success: false,
+        error: {
+          code: 'NETWORK_ERROR',
+          message: err.message || 'Gagal memperbarui data di server SIMOGU API.',
+        },
+      };
+    }
+  }
+
   async patch<T = any>(endpoint: string, body?: any, options: RequestInit = {}): Promise<ApiResponse<T>> {
+
     try {
       const res = await fetch(endpoint, {
         method: 'PATCH',

@@ -15,6 +15,7 @@ import {
   Shield,
   User,
   Sparkles,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 import { LogoutButton } from '@/components/logout-button';
@@ -89,6 +90,17 @@ const defaultTiles: CompactMetroTile[] = [
     iconColor: 'text-cyan-600 dark:text-cyan-400',
   },
   {
+    id: 'pengajian',
+    title: 'Pengajian Pesantren',
+    metric: '3 Sesi Waktu',
+    subtitle: 'PAGI, ASHAR, MAGHRIB',
+    href: '/pengajian/dashboard',
+    icon: BookOpen,
+    accentGradient: 'border-l-emerald-500 hover:border-l-emerald-600',
+    iconBg: 'bg-emerald-100 dark:bg-emerald-950/80',
+    iconColor: 'text-emerald-600 dark:text-emerald-400',
+  },
+  {
     id: 'whatsapp',
     title: 'WhatsApp Official API',
     metric: 'Terhubung',
@@ -100,6 +112,7 @@ const defaultTiles: CompactMetroTile[] = [
     iconColor: 'text-green-600 dark:text-green-400',
   },
 ];
+
 
 export default function AdminDashboardPage() {
   const [tiles, setTiles] = React.useState<CompactMetroTile[]>(defaultTiles);
@@ -154,6 +167,14 @@ export default function AdminDashboardPage() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Link
+              href="/pengajian/dashboard"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs flex items-center gap-1.5 transition-all"
+              title="Beralih ke Dashboard Pengajian Pesantren"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Moda Pengajian</span>
+            </Link>
+            <Link
               href="/settings/profile"
               className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
               title="Profil Pengguna"
@@ -163,6 +184,7 @@ export default function AdminDashboardPage() {
             <ThemeToggle />
             <LogoutButton size="sm" />
           </div>
+
         </header>
 
         {/* Minimal Compact Metro Tiles Grid (2 cols on mobile, 3 on tablet/desktop) */}

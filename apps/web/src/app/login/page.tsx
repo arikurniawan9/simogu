@@ -43,6 +43,10 @@ export default function LoginPage() {
     const role = (userObj.role || '').toUpperCase();
     const target = (role === 'SUPER_ADMIN' || role.includes('SUPER'))
       ? '/superadmin/dashboard'
+      : (role === 'KETUA_PIKET_PENGAJIAN' || role.includes('KETUA_PENG') || role.includes('KETUAPENGAJIAN'))
+      ? '/pengajian/dashboard'
+      : (role === 'PIKET_PENGAJIAN' || role.includes('PIKET_PENG') || role.includes('PIKETPENGAJIAN'))
+      ? '/pengajian/attendance'
       : (role === 'KETUA_PIKET' || role.includes('KETUA'))
       ? '/ketua-piket/dashboard'
       : role === 'PIKET'
@@ -83,6 +87,30 @@ export default function LoginPage() {
     const uname = usernameOrEmail.toLowerCase().trim();
 
     // Fast-path instant handling for demo accounts (guaranteed to always work seamlessly)
+    if (uname.includes('ketua_pengajian') || uname.includes('ketuapengajian')) {
+      performLoginSuccess({
+        id: 'ketua-pengajian-1',
+        username: 'ketua_pengajian',
+        fullName: 'K.H. Syamsul Arifin, Lc. (Ketua Piket Pengajian)',
+        name: 'K.H. Syamsul Arifin, Lc.',
+        role: 'KETUA_PIKET_PENGAJIAN',
+      }, 'token-ketua-pengajian-demo');
+      setIsLoading(false);
+      return;
+    }
+
+    if (uname.includes('piket_pengajian') || uname.includes('piketpengajian')) {
+      performLoginSuccess({
+        id: 'piket-pengajian-1',
+        username: 'piket_pengajian',
+        fullName: 'Ust. Ridwan Kamil, S.Pd.I (Piket Pengajian)',
+        name: 'Ust. Ridwan Kamil, S.Pd.I',
+        role: 'PIKET_PENGAJIAN',
+      }, 'token-piket-pengajian-demo');
+      setIsLoading(false);
+      return;
+    }
+
     if (uname === 'ketuapiket' || uname.includes('ketua')) {
       performLoginSuccess({
         id: 'ketua-piket-1',
@@ -287,27 +315,27 @@ export default function LoginPage() {
               <span className="text-[10px] text-slate-400 font-mono">Ketuk untuk isi</span>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1">
               <button
                 type="button"
                 onClick={() => fillQuickAccount('admin')}
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all text-center truncate"
               >
-                Admin
+                Admin Sekolah
               </button>
               <button
                 type="button"
                 onClick={() => fillQuickAccount('ketuapiket')}
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:border-purple-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all text-center truncate"
               >
-                Ketua Piket
+                Ketua Piket Sekolah
               </button>
               <button
                 type="button"
                 onClick={() => fillQuickAccount('piket1')}
                 className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all text-center truncate"
               >
-                Piket 1
+                Piket 1 Sekolah
               </button>
               <button
                 type="button"
@@ -316,7 +344,22 @@ export default function LoginPage() {
               >
                 SuperAdmin
               </button>
+              <button
+                type="button"
+                onClick={() => fillQuickAccount('ketua_pengajian')}
+                className="py-1.5 px-2 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:border-teal-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all text-center truncate"
+              >
+                🕌 Ketua Pengajian
+              </button>
+              <button
+                type="button"
+                onClick={() => fillQuickAccount('piket_pengajian')}
+                className="py-1.5 px-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:border-emerald-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all text-center truncate"
+              >
+                🕌 Piket Pengajian
+              </button>
             </div>
+
           </div>
         </div>
 
