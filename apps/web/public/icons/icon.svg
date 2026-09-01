@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="simogu-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="shield-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <filter id="drop-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#064e3b" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="112" fill="#101714" />
+  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#233830" stroke-width="8" />
+
+  <!-- Shield Base Shape -->
+  <g filter="url(#drop-shadow)" transform="translate(64, 48)">
+    <path d="M192 16 L336 64 C336 216 264 336 192 384 C120 336 48 216 48 64 Z" fill="url(#simogu-grad)" />
+    <!-- Glossy Shine Overlay -->
+    <path d="M192 24 L324 68 C324 204 260 316 192 364 C192 24 192 24 192 24 Z" fill="url(#shield-shine)" />
+    
+    <!-- Central Icon: Graduation Cap & Checkmark -->
+    <!-- Cap top -->
+    <path d="M192 110 L270 148 L192 186 L114 148 Z" fill="#ffffff" />
+    <!-- Cap base & tassel -->
+    <path d="M142 165 L142 205 C142 225 242 225 242 205 L242 165" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" />
+    <path d="M260 156 L278 190 L272 230" fill="none" stroke="#fef08a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="272" cy="236" r="6" fill="#fef08a" />
+
+    <!-- Big Bold Checkmark badge -->
+    <circle cx="192" cy="265" r="48" fill="#ffffff" />
+    <path d="M174 265 L186 277 L212 250" fill="none" stroke="#059669" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- Text Subtitle -->
+  <text x="256" y="468" text-anchor="middle" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="900" letter-spacing="4">SIMOGU</text>
+</svg>

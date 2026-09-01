@@ -124,35 +124,35 @@ export default function AdminWhatsAppLogsPage() {
       <div className="max-w-6xl mx-auto space-y-6 relative z-10">
 
         {/* Header Bar */}
-        <header className="flex items-center justify-between p-4 glass-card rounded-lg">
-          <div className="flex items-center gap-3">
+        <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <Link
               href="/admin/dashboard"
-              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
               title="Kembali ke Dashboard"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
+            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25 shrink-0">
               <MessageSquare className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight truncate">
                 Log Outbox WhatsApp
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Pencatatan outbox non-blocking dan mekanisme resend retry pesan notifikasi WhatsApp
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                WhatsApp Business Cloud API
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <ThemeToggle />
-              <LogoutButton size="sm" />
+            <LogoutButton size="sm" />
           </div>
         </header>
 
         {/* Data Table */}
-        <div className="glass-card p-5 sm:p-6 rounded-lg space-y-4">
+        <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-4">
           <DataTable
             data={logs}
             columns={columns}

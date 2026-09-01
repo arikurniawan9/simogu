@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DataTable, Column } from '@/components/data-table';
-import { ArrowLeft, BookOpen, Award, CheckCircle2, Calendar, Shield, Filter } from 'lucide-react';
+import { Footer } from '@/components/footer';
+import { ArrowLeft, BookOpen, Award, CheckCircle2, Calendar, Shield, Filter, User } from 'lucide-react';
 import Link from 'next/link';
 
 interface PublicHistoryItem {
@@ -80,113 +81,114 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
   ];
 
   return (
-    <div className="min-h-screen transition-colors duration-500 p-4 sm:p-6 relative">
+    <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
       {/* Floating Animated Ambient Blobs */}
       <div className="ambient-blob-1" />
       <div className="ambient-blob-2" />
 
-      <div className="max-w-5xl mx-auto space-y-6 relative z-10">
+      <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}
-        <header className="flex items-center justify-between p-4 glass-card rounded-lg">
-          <div className="flex items-center gap-3">
+        <header className="flex items-center justify-between p-3.5 sm:p-4 glass-card rounded-2xl">
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <Link
               href="/guru"
-              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 transition-colors"
+              title="Kembali ke Pencarian"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </Link>
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
+            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25 shrink-0">
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-                Profil & Riwayat Guru
+              <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-50 tracking-tight leading-tight">
+                Profil Pengajar
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Portal Transparansi Publik Kehadiran Guru
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                Portal Transparansi Presensi Guru
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <ThemeToggle />
           </div>
         </header>
 
         {/* Teacher Info & Appreciation Banner */}
-        <div className="glass-card p-6 rounded-lg space-y-4">
+        <div className="glass-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-mono font-black text-sm border border-brand-300/60 dark:border-brand-800">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 flex items-center justify-center font-mono font-black text-xs sm:text-sm border border-brand-300/60 dark:border-brand-800 shrink-0 shadow-md">
                 {params.code}
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-50">
+              <div className="min-w-0">
+                <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 truncate">
                   Drs. Ari Kurniawan, M.Pd.
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
-                  <BookOpen className="w-4 h-4 text-brand-600" /> Mata Pelajaran: <span className="font-semibold text-slate-700 dark:text-slate-300">Matematika</span>
+                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
+                  <BookOpen className="w-3.5 h-3.5 text-brand-600 shrink-0" /> Mapel: <span className="font-semibold text-slate-700 dark:text-slate-300">Matematika</span>
                 </p>
               </div>
             </div>
 
             {/* Appreciation Badge */}
-            <div className="p-3 bg-gradient-to-br from-emerald-500 to-brand-700 text-white rounded-lg shadow-md flex items-center gap-3 max-w-sm">
-              <Award className="w-8 h-8 text-amber-300 shrink-0" />
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-brand-700 text-white rounded-xl shadow-md flex items-center gap-3">
+              <Award className="w-7 h-7 text-amber-300 shrink-0" />
               <div>
                 <div className="text-xs font-bold">Penghargaan Kehadiran 100%</div>
-                <div className="text-[11px] text-emerald-100">Terima kasih atas dedikasi dan kehadiran sempurna mengajar siswa!</div>
+                <div className="text-[10px] text-emerald-100">Dedikasi dan kehadiran sempurna mengajar siswa</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Stats Summary Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="glass-card p-4 rounded-lg flex items-center justify-between">
+        {/* Stats Summary Cards (2x2 on mobile) */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
-              <div className="text-xs font-semibold text-slate-500">Total Hadir</div>
-              <div className="text-2xl font-black text-emerald-600 mt-1">4</div>
+              <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Total Hadir</div>
+              <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">4</div>
             </div>
-            <CheckCircle2 className="w-8 h-8 text-emerald-500 opacity-60" />
+            <CheckCircle2 className="w-6 sm:w-8 h-6 sm:h-8 text-emerald-500 opacity-60" />
           </div>
 
-          <div className="glass-card p-4 rounded-lg flex items-center justify-between">
+          <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
-              <div className="text-xs font-semibold text-slate-500">Izin</div>
-              <div className="text-2xl font-black text-amber-600 mt-1">0</div>
+              <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Izin</div>
+              <div className="text-xl sm:text-2xl font-black text-amber-600 mt-0.5">0</div>
             </div>
-            <Calendar className="w-8 h-8 text-amber-500 opacity-60" />
+            <Calendar className="w-6 sm:w-8 h-6 sm:h-8 text-amber-500 opacity-60" />
           </div>
 
-          <div className="glass-card p-4 rounded-lg flex items-center justify-between">
+          <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
-              <div className="text-xs font-semibold text-slate-500">Sakit</div>
-              <div className="text-2xl font-black text-rose-600 mt-1">0</div>
+              <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Sakit</div>
+              <div className="text-xl sm:text-2xl font-black text-rose-600 mt-0.5">0</div>
             </div>
-            <Shield className="w-8 h-8 text-rose-500 opacity-60" />
+            <Shield className="w-6 sm:w-8 h-6 sm:h-8 text-rose-500 opacity-60" />
           </div>
 
-          <div className="glass-card p-4 rounded-lg flex items-center justify-between">
+          <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
-              <div className="text-xs font-semibold text-slate-500">Tugas Dinas</div>
-              <div className="text-2xl font-black text-sky-600 mt-1">0</div>
+              <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Tugas Dinas</div>
+              <div className="text-xl sm:text-2xl font-black text-sky-600 mt-0.5">0</div>
             </div>
-            <BookOpen className="w-8 h-8 text-sky-500 opacity-60" />
+            <BookOpen className="w-6 sm:w-8 h-6 sm:h-8 text-sky-500 opacity-60" />
           </div>
         </div>
 
         {/* Filter Bar */}
-        <div className="glass-card p-3 rounded-lg flex items-center gap-2 overflow-x-auto">
-          <Filter className="w-4 h-4 text-brand-600 ml-2" />
-          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-2">Filter Status:</span>
+        <div className="glass-card p-2.5 sm:p-3 rounded-xl flex items-center gap-1.5 sm:gap-2 overflow-x-auto">
+          <Filter className="w-4 h-4 text-brand-600 ml-1 shrink-0" />
+          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mr-1 shrink-0 hidden sm:inline">Filter:</span>
           {['Semua', 'PRESENT', 'PERMISSION', 'SICK', 'OFFICIAL_DUTY'].map((st) => (
             <button
               key={st}
               onClick={() => setSelectedStatus(st)}
-              className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
                 selectedStatus === st
-                  ? 'bg-brand-600 text-white shadow-sm'
+                  ? 'bg-brand-600 text-white shadow-sm font-bold'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-brand-50'
               }`}
             >
@@ -196,7 +198,7 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
         </div>
 
         {/* Attendance History Table */}
-        <div className="glass-card p-5 sm:p-6 rounded-lg space-y-4">
+        <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-4">
           <DataTable
             data={filteredHistory}
             columns={columns}
@@ -204,6 +206,9 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
             pageSizeOptions={[5, 10, 20]}
           />
         </div>
+
+        {/* Footer */}
+        <Footer />
 
       </div>
     </div>

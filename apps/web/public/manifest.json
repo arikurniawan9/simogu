@@ -1,0 +1,43 @@
+{
+  "name": "SIMOGU - Sistem Monitoring Kehadiran Guru",
+  "short_name": "SIMOGU",
+  "description": "Sistem Monitoring Kehadiran Guru Terpadu, Real-time, dan Transparan.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#101714",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Cari Guru",
+      "short_name": "Cari",
+      "description": "Cari status dan jadwal mengajar guru",
+      "url": "/guru",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Presensi Piket",
+      "short_name": "Piket",
+      "description": "Buka modul presensi petugas piket",
+      "url": "/piket/attendance",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard Admin",
+      "short_name": "Dashboard",
+      "description": "Buka dashboard administrator",
+      "url": "/admin/dashboard",
+      "icons": [{ "src": "/icons/icon.svg", "sizes": "192x192" }]
+    }
+  ]
+}

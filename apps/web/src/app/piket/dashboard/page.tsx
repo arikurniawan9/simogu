@@ -457,15 +457,15 @@ export default function PiketDashboardPage() {
       <div className="ambient-blob-1" />
       <div className="ambient-blob-2" />
 
-      <div className="max-w-6xl mx-auto space-y-6 relative z-10">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 glass-card rounded-lg gap-4">
-          <div className="flex items-start sm:items-center gap-3 w-full sm:w-auto">
+        <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto min-w-0">
             {selectedJenjang ? (
               <button
                 onClick={handleBackToJenjang}
-                className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0 mt-1 sm:mt-0"
+                className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
                 title="Kembali ke Pilih Jenjang"
               >
                 <ArrowLeft className="w-5 h-5" />
@@ -473,26 +473,25 @@ export default function PiketDashboardPage() {
             ) : (
               <Link
                 href="/piket/dashboard"
-                className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0 mt-1 sm:mt-0"
+                className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
                 title="Refresh Dashboard"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
             )}
-            <div className={`w-10 h-10 shrink-0 rounded-md bg-gradient-to-br ${cfg ? cfg.gradient : 'from-brand-400 via-brand-500 to-brand-700'} flex items-center justify-center text-white shadow-md shadow-brand-500/25 transition-all duration-300 mt-1 sm:mt-0`}>
+            <div className={`w-9 sm:w-10 h-9 sm:h-10 shrink-0 rounded-xl bg-gradient-to-br ${cfg ? cfg.gradient : 'from-brand-400 via-brand-500 to-brand-700'} flex items-center justify-center text-white shadow-md shadow-brand-500/25 transition-all duration-300`}>
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2 flex-wrap leading-tight">
-                {selectedJenjang ? `Dashboard ${selectedJenjang}` : 'Dashboard Guru Piket'}
-                <span className={`px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold border ${cfg ? cfg.badge : 'bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border-brand-300 dark:border-brand-800'}`}>
-                  {selectedJenjang ? jenjangConfig[selectedJenjang].fullLabel : 'Operasional Piket'}
+              <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-50 tracking-tight flex items-center gap-2 truncate">
+                {selectedJenjang ? `Presensi ${selectedJenjang}` : 'Dashboard Guru Piket'}
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${cfg ? cfg.badge : 'bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300 border-brand-300 dark:border-brand-800'}`}>
+                  {selectedJenjang ? jenjangConfig[selectedJenjang].label : 'Piket'}
                 </span>
               </h1>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                <label className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 py-1 px-1.5 -ml-1.5 rounded-md transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 truncate">
+                <label className="flex items-center gap-1 cursor-pointer">
                   <CalendarIcon className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
-                  <span className="truncate">Shift:</span>
                   <input 
                     type="date" 
                     value={selectedDate} 
@@ -500,21 +499,19 @@ export default function PiketDashboardPage() {
                     className="bg-transparent border-none p-0 text-xs font-bold text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer"
                   />
                 </label>
-                <span className="hidden sm:inline text-slate-300 dark:text-slate-600">•</span>
-                <p className="flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 shrink-0" />
-                  <span className="truncate">Petugas: <span className="font-semibold text-slate-700 dark:text-slate-300">{piketName}</span></span>
-                </p>
+                <span>•</span>
+                <span className="truncate">{piketName}</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 border-t sm:border-t-0 border-slate-200 dark:border-slate-800 pt-3 sm:pt-0 w-full sm:w-auto justify-end" onClickCapture={handleInterceptNavigation}>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0" onClickCapture={handleInterceptNavigation}>
             <Link
               href="/settings/profile"
-              className="p-1.5 sm:p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
               title="Profil Pengguna"
             >
-              <User className="w-5 h-5" />
+              <User className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
             <ThemeToggle />
             <LogoutButton size="sm" />
@@ -523,24 +520,26 @@ export default function PiketDashboardPage() {
 
         {/* STEP 1: Pilih Jenjang */}
         {!selectedJenjang && (
-          <div className="glass-card p-5 rounded-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="glass-card p-4 sm:p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
             {isSunday ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-brand-100 dark:bg-brand-900/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CalendarIcon className="w-8 h-8 text-brand-600 dark:text-brand-400" />
+              <div className="text-center py-10">
+                <div className="w-14 h-14 bg-brand-100 dark:bg-brand-900/50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <CalendarIcon className="w-7 h-7 text-brand-600 dark:text-brand-400" />
                 </div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-2">Tidak Ada KBM Aktif</h2>
-                <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                  Hari yang Anda pilih adalah hari libur (Minggu). Tidak ada kegiatan absensi mengajar yang dapat dilakukan pada hari ini.
+                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-1">Hari Minggu / Libur</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                  Tidak ada kegiatan KBM atau jadwal mengajar terjadwal pada hari ini.
                 </p>
               </div>
             ) : (
               <>
-                <div className="flex items-center gap-2 mb-5">
-                  <Layers className="w-5 h-5 text-brand-600" />
-                  <h2 className="text-base font-extrabold text-slate-900 dark:text-slate-50">Pilih Jenjang Terlebih Dahulu</h2>
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-brand-600" />
+                  <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-slate-50">
+                    Pilih Jenjang Presensi
+                  </h2>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   {(Object.keys(jenjangConfig) as EducationLevel[]).map((j) => {
                     const c = jenjangConfig[j];
                     const IconComp = c.icon;
@@ -548,16 +547,16 @@ export default function PiketDashboardPage() {
                       <button
                         key={j}
                         onClick={() => handleSelectJenjang(j)}
-                        className={`group relative p-6 rounded-xl border-2 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${c.bg} ${c.border} ${c.hoverBorder}`}
+                        className={`group relative p-4 sm:p-5 rounded-2xl border-2 text-left transition-all duration-200 active:scale-95 hover:shadow-lg ${c.bg} ${c.border} ${c.hoverBorder}`}
                       >
-                        <div className="flex items-center justify-between mb-4">
-                          <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${c.gradient} flex items-center justify-center text-white shadow-md`}>
-                            <IconComp className="w-7 h-7" />
+                        <div className="flex items-center justify-between mb-3">
+                          <div className={`w-11 sm:w-12 h-11 sm:h-12 rounded-xl bg-gradient-to-br ${c.gradient} flex items-center justify-center text-white shadow-md`}>
+                            <IconComp className="w-6 h-6" />
                           </div>
-                          <ChevronRight className={`w-6 h-6 ${c.color} opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all`} />
+                          <ChevronRight className={`w-5 h-5 ${c.color} opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all`} />
                         </div>
-                        <div className={`text-3xl font-black ${c.color} mb-1`}>{j}</div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">{c.fullLabel}</div>
+                        <div className={`text-2xl font-black ${c.color} mb-0.5`}>{j}</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">{c.fullLabel}</div>
                       </button>
                     );
                   })}
@@ -569,17 +568,17 @@ export default function PiketDashboardPage() {
 
         {/* STEP 2: Pilih Kelas & Tampilkan Data */}
         {selectedJenjang && cfg && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Pemilihan Kelas (Grid/Chips) */}
-            <div className="glass-card p-5 sm:p-6 rounded-xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-500 rounded-l-xl"></div>
+            <div className="glass-card p-4 sm:p-6 rounded-2xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm relative overflow-hidden space-y-3">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-500 rounded-l-2xl"></div>
               
-              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold mb-4">
-                <Users className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-                <h3 className="text-base sm:text-lg">Pilih Kelas</h3>
+              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold">
+                <Users className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                <h3 className="text-sm sm:text-base">Pilih Rombel Kelas {selectedJenjang}</h3>
               </div>
               
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2 sm:gap-2.5">
                 {CLASSES_BY_JENJANG[selectedJenjang].map((cls) => {
                   const isSelected = selectedClass === cls;
                   const workflowState = classWorkflow[cls];
@@ -601,10 +600,10 @@ export default function PiketDashboardPage() {
                     <button
                       key={cls}
                       onClick={() => handleSelectClass(cls)}
-                      className={`px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 border-2 flex items-center justify-center gap-1.5 ${buttonStyle}`}
+                      className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 border-2 flex items-center justify-center gap-1.5 active:scale-95 ${buttonStyle}`}
                     >
-                      {isSaved && <CheckCircle2 className="w-4 h-4" />}
-                      {isPending && <Clock className="w-4 h-4" />}
+                      {isSaved && <CheckCircle2 className="w-3.5 h-3.5" />}
+                      {isPending && <Clock className="w-3.5 h-3.5" />}
                       {cls}
                     </button>
                   );
@@ -612,16 +611,16 @@ export default function PiketDashboardPage() {
               </div>
 
               {isAllClassesSaved && !shiftFinished && (
-                <div className="mt-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in zoom-in-95 duration-500">
-                  <div className="text-emerald-800 dark:text-emerald-300">
-                    <h4 className="font-bold">Semua Kelas Telah Selesai Diabsen!</h4>
-                    <p className="text-sm opacity-90 mt-1">Anda bisa menyimpan dan mengakhiri kegiatan absensi jenjang ini.</p>
+                <div className="mt-4 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 flex flex-col sm:flex-row items-center justify-between gap-3 animate-in zoom-in-95 duration-500">
+                  <div className="text-emerald-800 dark:text-emerald-300 text-center sm:text-left">
+                    <h4 className="font-bold text-xs sm:text-sm">Semua Kelas Selesai Diabsen!</h4>
+                    <p className="text-[11px] opacity-90">Simpan dan akhiri tugas piket jenjang {selectedJenjang}.</p>
                   </div>
                   <button
                     onClick={() => { setWorkflowActionType('FINISH_SHIFT'); setModalTitle('Akhiri Tugas Absensi'); setModalDesc(`Apakah Anda yakin semua absensi untuk jenjang ${selectedJenjang} sudah benar dan ingin menyimpan seluruh kegiatannya?`); setModalVariant('success'); setModalConfirmText('Akhiri Tugas'); setModalOpen(true); }}
-                    className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-md shadow-emerald-500/25 transition-all flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center"
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/25 transition-all flex items-center gap-2 whitespace-nowrap w-full sm:w-auto justify-center"
                   >
-                    <CheckCircle2 className="w-5 h-5" /> Simpan & Akhiri Tugas
+                    <CheckCircle2 className="w-4 h-4" /> Simpan & Akhiri Tugas
                   </button>
                 </div>
               )}
@@ -630,59 +629,59 @@ export default function PiketDashboardPage() {
             {selectedClass && (
               <>
                 {/* Data Table */}
-                <div className="glass-card p-5 sm:p-6 rounded-lg space-y-4 animate-in fade-in duration-300">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-4 animate-in fade-in duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
                       {(() => { const IC = cfg.icon; return <IC className={`w-5 h-5 ${cfg.color}`} />; })()}
-                      <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
+                      <span className="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">
                         Jadwal Kelas {selectedClass}
                       </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-md text-xs font-bold border ${cfg.badge}`}>
-                      {stats.total} Jam Pelajaran (1 - 8)
+                    <span className={`px-2.5 py-0.5 rounded-md text-xs font-bold border self-start sm:self-auto ${cfg.badge}`}>
+                      {stats.total} Jam Pelajaran
                     </span>
                   </div>
                   
                   <DataTable
                     data={currentSchedules}
                     columns={columns}
-                    searchPlaceholder={`Cari pelajaran atau guru...`}
+                    searchPlaceholder={`Cari mapel atau guru...`}
                     pageSizeOptions={[8, 16]}
                     rowClassName={(item) => item.attendanceStatus === 'TANPA_KETERANGAN' ? '!bg-rose-50/70 dark:!bg-rose-950/30 border-l-4 !border-rose-500' : ''}
                   />
 
                   {currentSchedules.length > 0 && (
-                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
                       {(!classWorkflow[selectedClass] || classWorkflow[selectedClass] === 'DRAFT') && (
                         <button
                           onClick={() => { setWorkflowActionType('SIMPAN'); setModalTitle('Simpan Absensi'); setModalDesc(`Apakah Anda yakin ingin menyimpan data absensi untuk kelas ${selectedClass}? Data tidak dapat diedit langsung setelah disimpan.`); setModalVariant('info'); setModalConfirmText('Simpan'); setModalOpen(true); }}
-                          className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg shadow-md shadow-brand-500/20 transition-all flex items-center gap-2"
+                          className="w-full sm:w-auto px-5 py-2.5 bg-brand-600 hover:bg-brand-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
                         >
-                          <CheckCircle2 className="w-5 h-5" /> Simpan Absensi
+                          <CheckCircle2 className="w-4 h-4" /> Simpan Absensi
                         </button>
                       )}
                       {classWorkflow[selectedClass] === 'SAVED' && (
                         <button
                           onClick={() => { setWorkflowActionType('AJUKAN_EDIT'); setModalTitle('Ajukan Edit Absensi'); setModalDesc(`Anda akan membuka kunci data absensi kelas ${selectedClass} untuk diedit. Setelah diedit, perubahan harus disetujui Admin. Lanjutkan?`); setModalVariant('warning'); setModalConfirmText('Buka Kunci'); setModalOpen(true); }}
-                          className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg shadow-md shadow-amber-500/20 transition-all flex items-center gap-2"
+                          className="w-full sm:w-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
                         >
-                          <Edit3 className="w-5 h-5" /> Ajukan Edit
+                          <Edit3 className="w-4 h-4" /> Ajukan Edit
                         </button>
                       )}
                       {classWorkflow[selectedClass] === 'EDITING' && (
                         <button
                           onClick={() => { setWorkflowActionType('KIRIM_EDIT'); setModalTitle('Kirim Pengajuan Edit'); setModalDesc(`Kirim perubahan absensi kelas ${selectedClass} ke Admin untuk disetujui? Data akan dikunci hingga disetujui.`); setModalVariant('info'); setModalConfirmText('Kirim Pengajuan'); setModalOpen(true); }}
-                          className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md shadow-blue-500/20 transition-all flex items-center gap-2"
+                          className="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
                         >
-                          <Send className="w-5 h-5" /> Kirim Pengajuan Edit
+                          <Send className="w-4 h-4" /> Kirim Pengajuan Edit
                         </button>
                       )}
                       {classWorkflow[selectedClass] === 'PENDING_APPROVAL' && (
                         <button
                           disabled
-                          className="px-6 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold rounded-lg flex items-center gap-2 cursor-not-allowed"
+                          className="w-full sm:w-auto px-5 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-bold rounded-xl flex items-center justify-center gap-2 cursor-not-allowed"
                         >
-                          <Clock className="w-5 h-5" /> Menunggu Persetujuan Admin
+                          <Clock className="w-4 h-4" /> Menunggu Persetujuan Admin
                         </button>
                       )}
                     </div>

@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ConfirmationModal } from '@/components/confirmation-modal';
-import { Shield, Lock, User, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Shield, Lock, User, ArrowRight, CheckCircle2, KeyRound, Sparkles, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -52,6 +53,11 @@ export default function LoginPage() {
     }
   };
 
+  const fillQuickAccount = (uname: string) => {
+    setUsernameOrEmail(uname);
+    setPassword('password123');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!usernameOrEmail.trim() || !password.trim()) {
@@ -74,7 +80,6 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        // Save Auth Session to LocalStorage & Cookie
         if (typeof window !== 'undefined') {
           localStorage.setItem('simogu_token', data.data.accessToken);
           localStorage.setItem('simogu_user', JSON.stringify(data.data.user));
@@ -94,7 +99,6 @@ export default function LoginPage() {
         setModalVariant('success');
         setModalOpen(true);
 
-        // Auto-redirect after 1.2s
         setTimeout(() => {
           router.push(target);
         }, 1200);
@@ -120,12 +124,19 @@ export default function LoginPage() {
       <div className="ambient-blob-1" />
       <div className="ambient-blob-2" />
 
-      <div className="w-full max-w-md space-y-6 relative z-10">
+      <div className="w-full max-w-md space-y-4 sm:space-y-5 relative z-10">
 
         {/* Top Header Card */}
-        <header className="flex items-center justify-between p-4 glass-card rounded-lg">
+        <header className="flex items-center justify-between p-3.5 sm:p-4 glass-card rounded-2xl">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
+            <Link
+              href="/"
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-800 transition-colors"
+              title="Kembali ke Beranda"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
               <Shield className="w-5 h-5" />
             </div>
             <span className="text-lg font-black text-slate-900 dark:text-slate-50 tracking-tight">
@@ -136,10 +147,10 @@ export default function LoginPage() {
         </header>
 
         {/* Main Login Form Card */}
-        <div className="glass-card p-6 sm:p-8 rounded-lg space-y-6">
-          <div className="text-center space-y-1.5">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
-              Masuk Akun
+        <div className="glass-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl space-y-5 shadow-2xl">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-50 tracking-tight">
+              Masuk Akun Pengguna
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Sistem Monitoring Kehadiran Guru Terpadu
@@ -147,34 +158,34 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">
                 Username / Email
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-600 dark:text-brand-400" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-600 dark:text-brand-400 pointer-events-none" />
                 <input
                   type="text"
                   value={usernameOrEmail}
                   onChange={(e) => setUsernameOrEmail(e.target.value)}
-                  placeholder="Masukkan username atau email"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-md bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200"
+                  placeholder="admin / piket1 / superadmin"
+                  className="w-full pl-10 pr-3.5 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-600 dark:text-brand-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-600 dark:text-brand-400 pointer-events-none" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Masukkan password"
-                  className="w-full pl-10 pr-3.5 py-2.5 rounded-md bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200"
+                  className="w-full pl-10 pr-3.5 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all duration-200"
                 />
               </div>
             </div>
@@ -182,39 +193,61 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 rounded-md text-xs sm:text-sm font-bold bg-brand-600 hover:bg-brand-700 active:scale-[0.99] text-white shadow-lg shadow-brand-600/25 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3.5 rounded-xl text-xs sm:text-sm font-bold bg-brand-600 hover:bg-brand-700 active:scale-[0.98] text-white shadow-lg shadow-brand-600/25 transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isLoading ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Memverifikasi...
+                  Memverifikasi Akun...
                 </>
               ) : (
                 <>
-                  Masuk Sekarang
+                  <span>Masuk Sekarang</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
-          {/* Seed Demo Account Hint */}
-          <div className="p-3 bg-brand-50/60 dark:bg-brand-950/40 rounded-md border border-brand-200/60 dark:border-brand-900 text-xs space-y-1.5">
-            <div className="font-semibold text-brand-800 dark:text-brand-300 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-brand-600" /> Akun Seed Bawaan:
+          {/* Quick Click Demo Account Buttons for Mobile ease */}
+          <div className="p-3.5 bg-brand-50/80 dark:bg-brand-950/40 rounded-xl border border-brand-200/70 dark:border-brand-900 space-y-2">
+            <div className="text-xs font-bold text-brand-800 dark:text-brand-300 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                1-Klik Akun Bawaan (Demo):
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">Ketuk untuk isi</span>
             </div>
-            <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-600 dark:text-slate-400 font-mono">
-              <div>SuperAdmin: superadmin</div>
-              <div>Admin: admin</div>
-              <div>Piket 1: piket1</div>
-              <div>Password: password123</div>
+            
+            <div className="grid grid-cols-3 gap-1.5 pt-1">
+              <button
+                type="button"
+                onClick={() => fillQuickAccount('admin')}
+                className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all"
+              >
+                Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => fillQuickAccount('piket1')}
+                className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all"
+              >
+                Piket 1
+              </button>
+              <button
+                type="button"
+                onClick={() => fillQuickAccount('superadmin')}
+                className="py-1.5 px-2 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-brand-500 text-[11px] font-bold shadow-xs active:scale-95 transition-all"
+              >
+                SuperAdmin
+              </button>
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* Confirmation Modal with Auto-Redirect support */}
+      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={modalOpen}
         onClose={handleModalConfirm}

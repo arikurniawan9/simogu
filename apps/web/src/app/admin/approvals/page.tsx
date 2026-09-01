@@ -211,46 +211,46 @@ export default function AdminApprovalsPage() {
   ];
 
   return (
-    <div className="min-h-screen transition-colors duration-500 p-4 sm:p-6 relative">
+    <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
       {/* Floating Animated Ambient Blobs */}
       <div className="ambient-blob-1" />
       <div className="ambient-blob-2" />
 
-      <div className="max-w-6xl mx-auto space-y-6 relative z-10">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}
-        <header className="flex items-center justify-between p-4 glass-card rounded-lg">
-          <div className="flex items-center gap-3">
+        <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <Link
               href="/admin/dashboard"
-              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
               title="Kembali ke Dashboard"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-10 h-10 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
+            <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25 shrink-0">
               <FileText className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-                Persetujuan Perubahan Status Absensi
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight truncate">
+                Persetujuan Absensi
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Persetujuan transaksional persetujuan atau penolakan pengajuan perubahan status
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                Persetujuan Pengajuan Edit Guru Piket
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <ThemeToggle />
-              <LogoutButton size="sm" />
+            <LogoutButton size="sm" />
           </div>
         </header>
 
         {/* Tabs Bar */}
-        <div className="glass-card p-2 rounded-lg flex items-center gap-2">
+        <div className="glass-card p-2 rounded-2xl flex items-center gap-2 overflow-x-auto">
           <button
             onClick={() => setActiveTab('PENDING')}
-            className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'PENDING'
                 ? 'bg-brand-600 text-white shadow-md'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -260,7 +260,7 @@ export default function AdminApprovalsPage() {
           </button>
           <button
             onClick={() => setActiveTab('HISTORY')}
-            className={`px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === 'HISTORY'
                 ? 'bg-brand-600 text-white shadow-md'
                 : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -271,7 +271,7 @@ export default function AdminApprovalsPage() {
         </div>
 
         {/* Data Table */}
-        <div className="glass-card p-5 sm:p-6 rounded-lg space-y-4">
+        <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-4">
           <DataTable
             data={filteredRequests}
             columns={columns}

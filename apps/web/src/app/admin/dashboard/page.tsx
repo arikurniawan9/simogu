@@ -14,6 +14,7 @@ import {
   ArrowRight,
   Shield,
   User,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { LogoutButton } from '@/components/logout-button';
@@ -109,41 +110,34 @@ export default function AdminDashboardPage() {
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5 relative z-10">
 
         {/* Compact Header Bar */}
-        <header className="p-3.5 glass-card rounded-lg flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/admin/dashboard"
-              className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
-              title="Kembali ke Dashboard"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </Link>
-            <div className="w-9 h-9 rounded-md bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shrink-0">
+        <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shrink-0">
               <Shield className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
-                Dashboard Admin
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-lg font-black text-slate-900 dark:text-slate-50 tracking-tight leading-tight truncate">
+                Dashboard Administrator
               </h1>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Pilih menu di bawah untuk membuka modul administrator
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                Pilih modul administrator di bawah
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href="/settings/profile"
-              className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
               title="Profil Pengguna"
             >
-              <User className="w-4 h-4" />
+              <User className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
             <ThemeToggle />
             <LogoutButton size="sm" />
           </div>
         </header>
 
-        {/* Minimal Compact Metro Tiles Grid */}
+        {/* Minimal Compact Metro Tiles Grid (2 cols on mobile, 3 on tablet/desktop) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           {compactTiles.map((tile) => {
             const IconComp = tile.icon;
@@ -151,25 +145,25 @@ export default function AdminDashboardPage() {
               <Link
                 key={tile.id}
                 href={tile.href}
-                className={`glass-card p-4 rounded-lg border-l-4 ${tile.accentGradient} hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between space-y-3 cursor-pointer`}
+                className={`glass-card p-3.5 sm:p-4 rounded-2xl border-l-4 ${tile.accentGradient} hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between space-y-3 cursor-pointer`}
               >
                 {/* Top Row: Icon & Arrow Indicator */}
                 <div className="flex items-center justify-between">
-                  <div className={`p-2 rounded-md ${tile.iconBg} ${tile.iconColor}`}>
-                    <IconComp className="w-5 h-5" />
+                  <div className={`p-2 rounded-xl ${tile.iconBg} ${tile.iconColor}`}>
+                    <IconComp className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-brand-600 group-hover:translate-x-1 transition-all" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-hover:text-brand-600 group-hover:translate-x-1 transition-all" />
                 </div>
 
                 {/* Main Content: Title & Big Metric */}
                 <div className="space-y-0.5">
-                  <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <div className="text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 truncate">
                     {tile.title}
                   </div>
-                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+                  <div className="text-lg sm:text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
                     {tile.metric}
                   </div>
-                  <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400 pt-0.5">
+                  <div className="text-[10px] sm:text-[11px] font-medium text-slate-500 dark:text-slate-400 pt-0.5 truncate">
                     {tile.subtitle}
                   </div>
                 </div>

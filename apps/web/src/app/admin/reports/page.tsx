@@ -288,70 +288,70 @@ export default function AdminReportsPage() {
         <div className="ambient-blob-1" />
         <div className="ambient-blob-2" />
 
-        <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6 relative z-10">
+        <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
           {/* Header Bar */}
-          <header className="flex items-center justify-between p-4 glass-card rounded-lg">
-            <div className="flex items-center gap-3">
+          <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <Link
                 href="/admin/dashboard"
-                className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+                className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
                 title="Kembali ke Dashboard"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
-              <div className="w-10 h-10 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25 shrink-0">
+              <div className="w-9 sm:w-10 h-9 sm:h-10 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 flex items-center justify-center text-white shadow-md shadow-brand-500/25 shrink-0">
                 <FileSpreadsheet className="w-5 h-5" />
               </div>
-              <div>
-                <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight">
-                  Pusat Laporan & Ekspor Data Presensi Guru
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 tracking-tight truncate">
+                  Pusat Laporan Presensi
                 </h1>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Generate rekapitulasi presensi guru resmi, cetak dokumen PDF & ekspor Excel (.xlsx)
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                  Ekspor Excel (.xlsx) & Cetak PDF Resmi
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
               <ThemeToggle />
               <LogoutButton size="sm" />
             </div>
           </header>
 
           {/* Ultra-Premium Glassmorphic Filter & Export Toolbar */}
-          <div className="glass-card p-4 sm:p-6 rounded-lg space-y-4 border-l-4 border-l-brand-600 shadow-xl shadow-brand-500/5 relative z-30 overflow-visible">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+          <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-3.5 border-l-4 border-l-brand-600 shadow-xl shadow-brand-500/5 relative z-30 overflow-visible">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-b border-slate-100 dark:border-slate-800/80 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-md bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-300">
+                <div className="p-1.5 rounded-lg bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-300">
                   <Filter className="w-4 h-4" />
                 </div>
                 <span className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-                  Filter Interaktif Rekapitulasi Laporan
+                  Filter Laporan Presensi
                 </span>
               </div>
 
               {/* Action Buttons: Ekspor Excel & Cetak PDF */}
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={handleExportExcel}
-                  className="px-3.5 py-2 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
+                  className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-1.5"
                 >
-                  <Download className="w-4 h-4" /> Ekspor Excel (.xlsx)
+                  <Download className="w-4 h-4" /> <span className="truncate">Ekspor Excel</span>
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="px-3.5 py-2 rounded-md text-xs font-bold bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white shadow-md transition-all flex items-center justify-center gap-1.5 flex-1 sm:flex-none"
+                  className="px-3.5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 text-white shadow-md transition-all flex items-center justify-center gap-1.5"
                 >
-                  <Printer className="w-4 h-4" /> Cetak PDF Resmi
+                  <Printer className="w-4 h-4" /> <span className="truncate">Cetak PDF</span>
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
               {/* Select 1: Filter Jenjang */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Filter Jenjang Sekolah
+                  Jenjang Sekolah
                 </label>
                 <CustomSelect
                   options={[
@@ -369,7 +369,7 @@ export default function AdminReportsPage() {
               {/* Select 2: Filter Status */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Filter Status Kehadiran
+                  Status Kehadiran
                 </label>
                 <CustomSelect
                   options={[
@@ -387,21 +387,21 @@ export default function AdminReportsPage() {
               {/* Date Range Selector */}
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Rentang Tanggal Laporan
+                  Rentang Tanggal
                 </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <span className="text-xs font-bold text-slate-400">s/d</span>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-700 text-xs font-mono font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -409,11 +409,11 @@ export default function AdminReportsPage() {
           </div>
 
           {/* Data Table Preview Card */}
-          <div className="glass-card p-4 sm:p-6 rounded-lg space-y-4">
+          <div className="glass-card p-4 sm:p-6 rounded-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="text-xs font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                <span>Pratinjau Data Laporan ({filteredData.length} Jam Pelajaran)</span>
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Pratinjau ({filteredData.length} Jam Pelajaran)</span>
               </div>
               <span className="text-xs font-mono text-brand-600 dark:text-brand-400">
                 {selectedJenjang} | {selectedStatus}

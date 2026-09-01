@@ -128,59 +128,59 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-500 p-4 sm:p-6 relative">
+    <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
       <div className="ambient-blob-1" />
       <div className="ambient-blob-2" />
 
-      <div className="max-w-4xl mx-auto space-y-6 relative z-10">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative z-10">
         
         {/* Header Bar */}
-        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 glass-card rounded-xl gap-4 border border-slate-200/60 dark:border-slate-700/50 shadow-sm">
-          <div className="flex items-center gap-3">
+        <header className="p-3.5 sm:p-4 glass-card rounded-2xl flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             <Link
               href={getDashboardRoute()}
-              className="p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
+              className="p-1.5 sm:p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors shrink-0"
               title="Kembali ke Dashboard"
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-10 h-10 shrink-0 rounded-md bg-gradient-to-br from-brand-400 via-brand-500 to-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
+            <div className="w-9 sm:w-10 h-9 sm:h-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-400 via-brand-500 to-brand-600 flex items-center justify-center text-white shadow-md shadow-brand-500/25">
               <User className="w-5 h-5" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight leading-tight">
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-xl font-bold text-slate-900 dark:text-slate-50 tracking-tight truncate">
                 Pengaturan Akun
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Kelola profil dan keamanan akun Anda
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                Profil & Keamanan Akun
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 border-t sm:border-t-0 border-slate-200 dark:border-slate-800 pt-3 sm:pt-0 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2 shrink-0">
             <ThemeToggle />
             <LogoutButton size="sm" />
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
           {/* Sidebar / Info Panel */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="glass-card p-6 rounded-xl border border-slate-200/60 dark:border-slate-700/50 text-center relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-brand-500 to-brand-700 opacity-20 dark:opacity-40"></div>
+          <div className="lg:col-span-1 space-y-4">
+            <div className="glass-card p-5 sm:p-6 rounded-2xl text-center relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-br from-brand-500 to-brand-700 opacity-20 dark:opacity-40"></div>
               
-              <div className="relative mx-auto w-24 h-24 rounded-full bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-800 shadow-xl flex items-center justify-center mt-4 mb-4 group cursor-pointer overflow-hidden">
+              <div className="relative mx-auto w-20 sm:w-24 h-20 sm:h-24 rounded-full bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-800 shadow-xl flex items-center justify-center mt-2 mb-3 group cursor-pointer overflow-hidden">
                 <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-6 h-6 text-white mb-1" />
-                  <span className="text-[10px] text-white font-semibold">Ubah Foto</span>
+                  <Camera className="w-5 h-5 text-white mb-1" />
+                  <span className="text-[10px] text-white font-semibold">Ubah</span>
                 </div>
-                <span className="text-3xl font-black text-slate-300 dark:text-slate-600 select-none">
+                <span className="text-2xl sm:text-3xl font-black text-slate-300 dark:text-slate-600 select-none">
                   {(user?.name || 'U').charAt(0).toUpperCase()}
                 </span>
               </div>
               
-              <h2 className="text-lg font-extrabold text-slate-900 dark:text-white truncate px-2">{user?.name || 'Pengguna'}</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 truncate px-2">@{user?.username || 'user'}</p>
+              <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white truncate px-2">{user?.name || 'Pengguna'}</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 truncate px-2">@{user?.username || 'user'}</p>
               
               <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${getRoleBadgeColor(user.role)}`}>
                 <Shield className="w-3.5 h-3.5" />
@@ -188,77 +188,76 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="glass-card p-5 rounded-xl border border-slate-200/60 dark:border-slate-700/50">
-              <div className="flex items-center gap-2 mb-2 text-slate-800 dark:text-slate-200">
+            <div className="glass-card p-4 sm:p-5 rounded-2xl">
+              <div className="flex items-center gap-2 mb-1.5 text-slate-800 dark:text-slate-200">
                 <KeyRound className="w-4 h-4 text-brand-500" />
-                <h3 className="text-sm font-bold">Keamanan</h3>
+                <h3 className="text-xs sm:text-sm font-bold">Keamanan Akun</h3>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Pastikan Anda menggunakan kombinasi huruf dan angka untuk password yang kuat. Jangan pernah membagikan kredensial Anda kepada siapapun.
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                Gunakan kombinasi password yang kuat untuk menjaga keamanan akses presensi sekolah.
               </p>
             </div>
           </div>
 
           {/* Forms Panel */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             
             {/* Update Profile Form */}
-            <div className="glass-card p-6 rounded-xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-500 rounded-l-xl"></div>
+            <div className="glass-card p-4 sm:p-6 rounded-2xl relative overflow-hidden space-y-4">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-brand-500 rounded-l-2xl"></div>
               
-              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold mb-6">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold">
                 <User className="w-5 h-5 text-brand-600 dark:text-brand-400" />
-                <h3 className="text-base sm:text-lg">Informasi Profil</h3>
+                <h3 className="text-base">Informasi Profil</h3>
               </div>
 
               {profileMessage && (
-                <div className={`mb-5 p-3 rounded-lg text-sm font-semibold flex items-center gap-2 ${profileMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900'}`}>
-                  {profileMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${profileMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900'}`}>
+                  {profileMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
                   {profileMessage.text}
                 </div>
               )}
 
-              <form onSubmit={handleSaveProfile} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Nama Lengkap</label>
+              <form onSubmit={handleSaveProfile} className="space-y-3.5">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Nama Lengkap</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                     placeholder="Masukkan nama lengkap"
                   />
                 </div>
                 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Username (ID Login)</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Username (ID Login)</label>
                   <input
                     type="text"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all"
                     placeholder="Masukkan username"
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Peran Akses (Role)</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Peran Akses (Role)</label>
                   <input
                     type="text"
                     disabled
                     value={roleLabel(user.role)}
-                    className="w-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed"
+                    className="w-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 cursor-not-allowed"
                   />
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 ml-1">Peran akses tidak dapat diubah sendiri.</p>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <button
                     type="submit"
                     disabled={isSavingProfile}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-lg shadow-md shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
                   >
                     {isSavingProfile ? (
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -272,65 +271,65 @@ export default function ProfilePage() {
             </div>
 
             {/* Update Password Form */}
-            <div className="glass-card p-6 rounded-xl border border-slate-200/60 dark:border-slate-700/50 shadow-sm relative overflow-hidden mt-6">
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500 rounded-l-xl"></div>
+            <div className="glass-card p-4 sm:p-6 rounded-2xl relative overflow-hidden space-y-4">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-amber-500 rounded-l-2xl"></div>
               
-              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold mb-6">
+              <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold">
                 <Lock className="w-5 h-5 text-amber-500" />
-                <h3 className="text-base sm:text-lg">Ubah Password</h3>
+                <h3 className="text-base">Ubah Password</h3>
               </div>
 
               {passwordMessage && (
-                <div className={`mb-5 p-3 rounded-lg text-sm font-semibold flex items-center gap-2 ${passwordMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900'}`}>
-                  {passwordMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+                <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${passwordMessage.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900' : 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900'}`}>
+                  {passwordMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
                   {passwordMessage.text}
                 </div>
               )}
 
-              <form onSubmit={handleSavePassword} className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Password Saat Ini</label>
+              <form onSubmit={handleSavePassword} className="space-y-3.5">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Password Saat Ini</label>
                   <input
                     type="password"
                     required
                     value={oldPassword}
                     onChange={(e) => setOldPassword(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+                    className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
                     placeholder="••••••••"
                   />
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Password Baru</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Password Baru</label>
                     <input
                       type="password"
                       required
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+                      className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
                       placeholder="Minimal 6 karakter"
                     />
                   </div>
                   
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 ml-1">Konfirmasi Password Baru</label>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-300 ml-1">Konfirmasi Password</label>
                     <input
                       type="password"
                       required
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
+                      className="w-full bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all"
                       placeholder="Ulangi password baru"
                     />
                   </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-1">
                   <button
                     type="submit"
                     disabled={isSavingPassword || !oldPassword || !newPassword || !confirmPassword}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-lg shadow-md shadow-amber-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-amber-500/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSavingPassword ? (
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
