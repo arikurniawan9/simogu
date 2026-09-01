@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer';
 import { CheckCircle2, XCircle, Clock, FileText, ArrowLeft, Paperclip } from 'lucide-react';
 import Link from 'next/link';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 interface ChangeRequestItem {
   id: string;
@@ -60,22 +61,29 @@ export default function AdminApprovalsPage() {
   const [activeTab, setActiveTab] = useState<'PENDING' | 'HISTORY'>('PENDING');
 
   React.useEffect(() => {
-    try {
-      const stored = localStorage.getItem('simogu_edit_requests');
-      if (stored) {
-        const parsed = JSON.parse(stored) as ChangeRequestItem[];
-        // Merge with sample requests, filter out duplicates by id if any
-        setRequests(prev => {
-          const combined = [...prev];
-          parsed.forEach(p => {
-            if (!combined.find(c => c.id === p.id)) {
-              combined.push(p);
-            }
-          });
-          return combined;
-        });
+    const fetchRequests = async () => {
+      const res = await apiClient.get<any>('/api/v1/change-requests?limit=100');
+      if (res.success && res.data && Array.isArray(res.data.items) && res.data.items.length > 0) {
+        const mapped: ChangeRequestItem[] = res.data.items.map((r: any) => ({
+          id: r.id,
+          teacherName: r.attendanceRecord?.schedule?.teacher?.fullName || 'Guru',
+          className: r.attendanceRecord?.schedule?.class?.name || 'Kelas',
+          subject: r.attendanceRecord?.schedule?.subject || 'Pelajaran',
+          periodTime: r.attendanceRecord?.schedule?.lessonPeriod
+            ? `${r.attendanceRecord.schedule.lessonPeriod.startTime} - ${r.attendanceRecord.schedule.lessonPeriod.endTime}`
+            : '07:00 - 07:45',
+          currentStatus: r.originalStatus,
+          requestedStatus: r.requestedStatus,
+          requesterName: r.requester?.fullName || 'Petugas Piket',
+          reason: r.reason,
+          attachmentUrl: r.proofUrl,
+          status: r.status,
+          createdAt: new Date(r.createdAt).toLocaleString('id-ID'),
+        }));
+        setRequests(mapped);
       }
-    } catch (e) {}
+    };
+    fetchRequests();
   }, []);
 
   // Review Modal State
@@ -95,27 +103,20 @@ export default function AdminApprovalsPage() {
     setModalOpen(true);
   };
 
-  const handleConfirmReview = () => {
+  const handleConfirmReview = async () => {
     if (targetReq) {
+      if (actionType === 'APPROVE') {
+        await apiClient.post(`/api/v1/change-requests/${targetReq.id}/approve`, { reviewNotes });
+      } else {
+        await apiClient.post(`/api/v1/change-requests/${targetReq.id}/reject`, { reason: reviewNotes });
+      }
+
       setRequests((prev) => {
         const next = prev.map((r) =>
           r.id === targetReq.id
             ? { ...r, status: (actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED') as 'APPROVED' | 'REJECTED' }
             : r,
         );
-        // Save back to localStorage if it was a piket request
-        try {
-          const stored = localStorage.getItem('simogu_edit_requests');
-          if (stored) {
-            let parsed = JSON.parse(stored) as ChangeRequestItem[];
-            parsed = parsed.map((r) => 
-              r.id === targetReq.id 
-                ? { ...r, status: (actionType === 'APPROVE' ? 'APPROVED' : 'REJECTED') as 'APPROVED' | 'REJECTED' } 
-                : r
-            );
-            localStorage.setItem('simogu_edit_requests', JSON.stringify(parsed));
-          }
-        } catch(e) {}
         return next;
       });
     }
@@ -212,10 +213,6 @@ export default function AdminApprovalsPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      {/* Floating Animated Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

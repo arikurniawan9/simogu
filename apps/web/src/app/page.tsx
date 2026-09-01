@@ -6,6 +6,7 @@ import { DataTable, Column } from '@/components/data-table';
 import { Footer } from '@/components/footer';
 import { Shield, LogIn, LayoutDashboard, Search, ArrowRight, BookOpen, Clock, Sparkles, Smartphone } from 'lucide-react';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api-client';
 
 interface PublicTeacherAttendance {
   id: string;
@@ -28,6 +29,7 @@ const publicTeachersList: PublicTeacherAttendance[] = [
 export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dashboardUrl, setDashboardUrl] = useState('/login');
+  const [teachersList, setTeachersList] = useState<PublicTeacherAttendance[]>(publicTeachersList);
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('simogu_token') : null;
@@ -38,9 +40,12 @@ export default function HomePage() {
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          if (user.role === 'SUPER_ADMIN') {
+          const role = (user.role || '').toUpperCase();
+          if (role === 'SUPER_ADMIN' || role.includes('SUPER')) {
             setDashboardUrl('/superadmin/dashboard');
-          } else if (user.role === 'PIKET') {
+          } else if (role === 'KETUA_PIKET' || role.includes('KETUA')) {
+            setDashboardUrl('/ketua-piket/dashboard');
+          } else if (role === 'PIKET') {
             setDashboardUrl('/piket/dashboard');
           } else {
             setDashboardUrl('/admin/dashboard');
@@ -52,6 +57,22 @@ export default function HomePage() {
         setDashboardUrl('/admin/dashboard');
       }
     }
+
+    async function loadPublicTeachers() {
+      const res = await apiClient.get<any[]>('/api/v1/teachers/search?q=');
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const mapped: PublicTeacherAttendance[] = res.data.map((t: any, idx: number) => ({
+          id: t.id,
+          code: t.teacherCode,
+          name: t.fullName,
+          subject: t.subject || 'Umum',
+          status: 'Hadir',
+          timeSlot: `07:00 - 08:30 (Jam ${(idx % 3) * 2 + 1}-${(idx % 3) * 2 + 2})`,
+        }));
+        setTeachersList(mapped);
+      }
+    }
+    loadPublicTeachers();
   }, []);
 
   const tableColumns: Column<PublicTeacherAttendance>[] = [
@@ -94,10 +115,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      {/* Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Top Header Bar */}
@@ -208,7 +225,7 @@ export default function HomePage() {
           </div>
 
           <DataTable
-            data={publicTeachersList}
+            data={teachersList}
             columns={tableColumns}
             searchPlaceholder="Cari kode atau nama guru di daftar publik..."
             pageSizeOptions={[5, 10]}

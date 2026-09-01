@@ -109,6 +109,16 @@ export function BottomNav() {
 
     const role = (userRole || '').toUpperCase();
 
+    if (role === 'KETUA_PIKET') {
+      return [
+        { label: 'Dashboard', href: '/ketua-piket/dashboard', icon: Home },
+        { label: 'Pantau Kelas', href: '/ketua-piket/attendance', icon: ClipboardCheck },
+        { label: 'ACC Edit', href: '/ketua-piket/approvals', icon: CheckCircle2, badge: pendingApprovalsCount },
+        { label: 'Rekap Guru', href: '/ketua-piket/reports', icon: FileSpreadsheet },
+        { label: 'Profil', href: '/settings/profile', icon: User },
+      ];
+    }
+
     if (role === 'PIKET') {
       return [
         { label: 'Dashboard', href: '/piket/dashboard', icon: Home },
@@ -161,6 +171,7 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={true}
                 className={`relative flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-200 ${
                   active
                     ? 'text-brand-600 dark:text-brand-400 font-black scale-105'
@@ -251,7 +262,7 @@ export function BottomNav() {
             {/* Navigation Links Grid in Drawer */}
             <div className="grid grid-cols-2 gap-2.5">
               <Link
-                href="/admin/dashboard"
+                href={userRole === 'KETUA_PIKET' ? '/ketua-piket/dashboard' : '/admin/dashboard'}
                 onClick={() => setMenuDrawerOpen(false)}
                 className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-brand-500 flex items-center gap-3 transition-all"
               >
@@ -260,12 +271,12 @@ export function BottomNav() {
                 </div>
                 <div>
                   <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Dashboard</div>
-                  <div className="text-[10px] text-slate-500">Beranda Admin</div>
+                  <div className="text-[10px] text-slate-500">{userRole === 'KETUA_PIKET' ? 'Ketua Piket' : 'Beranda Admin'}</div>
                 </div>
               </Link>
 
               <Link
-                href="/admin/approvals"
+                href={userRole === 'KETUA_PIKET' ? '/ketua-piket/approvals' : '/admin/approvals'}
                 onClick={() => setMenuDrawerOpen(false)}
                 className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-purple-500 flex items-center gap-3 transition-all relative"
               >
@@ -273,7 +284,7 @@ export function BottomNav() {
                   <CheckCircle2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Persetujuan</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-slate-100">{userRole === 'KETUA_PIKET' ? 'ACC Ajuan Edit' : 'Persetujuan'}</div>
                   <div className="text-[10px] text-slate-500">Approval Absensi</div>
                 </div>
                 {pendingApprovalsCount > 0 && (
@@ -284,16 +295,34 @@ export function BottomNav() {
               </Link>
 
               <Link
-                href="/admin/teachers"
+                href={userRole === 'KETUA_PIKET' ? '/ketua-piket/reports' : '/admin/reports'}
+                onClick={() => setMenuDrawerOpen(false)}
+                className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-cyan-500 flex items-center gap-3 transition-all"
+              >
+                <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400">
+                  <FileSpreadsheet className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-slate-100">{userRole === 'KETUA_PIKET' ? 'Rekap Laporan' : 'Laporan Presensi'}</div>
+                  <div className="text-[10px] text-slate-500">Harian/Minggu/Bulan</div>
+                </div>
+              </Link>
+
+              <Link
+                href={userRole === 'KETUA_PIKET' ? '/ketua-piket/attendance' : '/admin/teachers'}
                 onClick={() => setMenuDrawerOpen(false)}
                 className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/70 hover:border-emerald-500 flex items-center gap-3 transition-all"
               >
                 <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-                  <UserCheck className="w-4 h-4" />
+                  {userRole === 'KETUA_PIKET' ? <ClipboardCheck className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-slate-900 dark:text-slate-100">Master Guru</div>
-                  <div className="text-[10px] text-slate-500">Data Pengajar</div>
+                  <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                    {userRole === 'KETUA_PIKET' ? 'Pantau & Absen' : 'Master Guru'}
+                  </div>
+                  <div className="text-[10px] text-slate-500">
+                    {userRole === 'KETUA_PIKET' ? 'Kontrol Kelas Real-Time' : 'Data Pengajar'}
+                  </div>
                 </div>
               </Link>
 

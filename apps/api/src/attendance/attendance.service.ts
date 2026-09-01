@@ -8,10 +8,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { QueryAttendanceDto } from './dto/query-attendance.dto';
 import { AttendanceStatus } from '@prisma/client';
+import { WhatsAppService } from '../whatsapp/whatsapp.service';
 
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly whatsAppService?: WhatsAppService,
+  ) {}
 
   async createAttendance(dto: CreateAttendanceDto, recordedByUserId?: string) {
     if (!dto.scheduleIds || dto.scheduleIds.length === 0) {
@@ -98,6 +102,40 @@ export class AttendanceService {
         createdRecords.push(record);
       }
     });
+
+    // Send WhatsApp notification asynchronously if WhatsApp service is available
+    if (this.whatsAppService) {
+      for (const record of createdRecords) {
+        const teacher = record.schedule?.teacher;
+        if (teacher && teacher.whatsappNumber) {
+          const className = record.schedule.class?.name || 'Kelas';
+          const periodNum = record.schedule.lessonPeriod?.periodNumber || 1;
+          const statusIndo =
+            record.status === 'PRESENT'
+              ? 'HADIR'
+              : record.status === 'ABSENT_PENDING_CONFIRMATION'
+                ? 'PENDING KONFIRMASI'
+                : record.status === 'PERMISSION'
+                  ? 'IZIN'
+                  : record.status === 'SICK'
+                    ? 'SAKIT'
+                    : record.status === 'OFFICIAL_DUTY'
+                      ? 'TUGAS DINAS'
+                      : record.status;
+
+          const message = `Halo ${teacher.fullName},\nPresensi mengajar Anda di ${className} (Jam ke-${periodNum}) tanggal ${dto.attendanceDate} telah dicatat dengan status: *${statusIndo}*.`;
+
+          this.whatsAppService
+            .sendNotificationMessage(
+              teacher.id,
+              teacher.whatsappNumber,
+              message,
+              record.id,
+            )
+            .catch(() => {});
+        }
+      }
+    }
 
     return {
       success: true,

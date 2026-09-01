@@ -21,8 +21,8 @@ import {
   BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
-import * as XLSX from 'xlsx';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
@@ -55,15 +55,57 @@ export default function AdminReportsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('Semua');
   const [startDate, setStartDate] = useState('2026-08-01');
   const [endDate, setEndDate] = useState('2026-08-09');
+  const [reportData, setReportData] = useState<ReportRowItem[]>(sampleReportData);
 
-  const filteredData = sampleReportData.filter((item) => {
+  React.useEffect(() => {
+    async function loadReports() {
+      const res = await apiClient.get<any>(`/api/v1/reports/data?startDate=${startDate}&endDate=${endDate}`);
+      if (res.success && res.data && Array.isArray(res.data) && res.data.length > 0) {
+        const mapped: ReportRowItem[] = res.data.map((r: any) => {
+          let jenjang: EducationLevel = 'SMA';
+          if (r.schedule?.class?.grade && ['7', '8', '9'].includes(String(r.schedule.class.grade))) jenjang = 'SMP';
+          else if (r.schedule?.class?.major && (r.schedule.class.major.includes('TKJ') || r.schedule.class.major.includes('RPL'))) jenjang = 'SMK';
+
+          const statusMap: Record<string, { status: any; label: string }> = {
+            PRESENT: { status: 'PRESENT', label: 'Hadir' },
+            PERMISSION: { status: 'PERMISSION', label: 'Izin' },
+            SICK: { status: 'PERMISSION', label: 'Sakit' },
+            OFFICIAL_DUTY: { status: 'DUTY', label: 'Tugas Dinas' },
+            ABSENT_PENDING_CONFIRMATION: { status: 'ABSENT', label: 'Pending' },
+            WITHOUT_EXPLANATION: { status: 'ABSENT', label: 'Alpa' },
+          };
+
+          const sInfo = statusMap[r.status] || { status: 'PRESENT', label: r.status };
+
+          return {
+            id: r.id,
+            attendanceDate: r.attendanceDate.split('T')[0],
+            teacherCode: r.schedule?.teacher?.teacherCode || 'GRU',
+            teacherName: r.schedule?.teacher?.fullName || 'Guru',
+            jenjang: jenjang,
+            subject: r.schedule?.subject || 'Umum',
+            className: r.schedule?.class?.name || 'Kelas',
+            periodNumber: r.schedule?.lessonPeriod?.periodNumber || 1,
+            periodTime: r.schedule?.lessonPeriod ? `${r.schedule.lessonPeriod.startTime} - ${r.schedule.lessonPeriod.endTime}` : '07:00 - 07:45',
+            status: sInfo.status,
+            statusLabel: sInfo.label,
+            notes: r.notes || 'Terverifikasi Petugas Piket',
+          };
+        });
+        setReportData(mapped);
+      }
+    }
+    loadReports();
+  }, [startDate, endDate]);
+
+  const filteredData = reportData.filter((item) => {
     const jenjangMatch = selectedJenjang === 'Semua' || item.jenjang === selectedJenjang;
     const statusMatch = selectedStatus === 'Semua' || item.statusLabel === selectedStatus;
     const dateMatch = item.attendanceDate >= startDate && item.attendanceDate <= endDate;
     return jenjangMatch && statusMatch && dateMatch;
   });
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (filteredData.length === 0) {
       alert('Tidak ada data laporan yang sesuai filter untuk diekspor!');
       return;
@@ -112,6 +154,7 @@ export default function AdminReportsPage() {
     sheetData.push(['', '', '', '', '', '', '', '', 'HADIR & TUGAS:', `${presentCount + dutyCount} (${attendanceRate}%)`]);
     sheetData.push(['', '', '', '', '', '', '', '', 'IZIN / SAKIT:', `${permCount}`]);
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
     worksheet['!cols'] = [
@@ -285,9 +328,6 @@ export default function AdminReportsPage() {
 
       {/* Screen Interface (Hidden when Printing) */}
       <div className="print:hidden">
-        <div className="ambient-blob-1" />
-        <div className="ambient-blob-2" />
-
         <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
           {/* Header Bar */}

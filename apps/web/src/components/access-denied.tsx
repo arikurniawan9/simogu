@@ -14,6 +14,7 @@ interface AccessDeniedProps {
 export function AccessDenied({ requiredRole = 'ADMIN / SUPER ADMIN', userRole, message }: AccessDeniedProps) {
   const getDashboardUrl = () => {
     if (userRole === 'SUPER_ADMIN') return '/superadmin/dashboard';
+    if (userRole === 'KETUA_PIKET') return '/ketua-piket/dashboard';
     if (userRole === 'PIKET') return '/piket/dashboard';
     if (userRole === 'ADMIN') return '/admin/dashboard';
     return '/login';
@@ -21,10 +22,6 @@ export function AccessDenied({ requiredRole = 'ADMIN / SUPER ADMIN', userRole, m
 
   return (
     <div className="min-h-screen transition-colors duration-500 flex items-center justify-center p-4 relative">
-      {/* Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-md w-full glass-card p-6 sm:p-8 rounded-lg text-center space-y-5 relative z-10 shadow-2xl border border-rose-200 dark:border-rose-900/50">
         <div className="flex justify-end">
           <ThemeToggle />

@@ -28,8 +28,8 @@ import {
   Layers,
 } from 'lucide-react';
 import Link from 'next/link';
-import * as XLSX from 'xlsx';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
@@ -117,6 +117,29 @@ const sampleTeachers: TeacherItem[] = [
 export default function AdminTeachersPage() {
   const [teachers, setTeachers] = useState<TeacherItem[]>(sampleTeachers);
 
+  // Fetch live teachers from PostgreSQL database via API
+  const fetchLiveTeachers = async () => {
+    const res = await apiClient.get('/api/v1/teachers?limit=100');
+    if (res.success && res.data && Array.isArray(res.data.items) && res.data.items.length > 0) {
+      const mapped: TeacherItem[] = res.data.items.map((t: any) => ({
+        id: t.id,
+        teacherCode: t.teacherCode,
+        nip: t.nip || '',
+        fullName: t.fullName,
+        gender: t.gender || 'MALE',
+        whatsappNumber: t.whatsappNumber,
+        subjects: t.subject ? t.subject.split(',').map((s: string) => s.trim()) : ['Umum'],
+        jenjangList: ['SMA', 'SMP'],
+        isActive: t.isActive,
+      }));
+      setTeachers(mapped);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchLiveTeachers();
+  }, []);
+
   // Filter States
   const [selectedJenjang, setSelectedJenjang] = useState<string>('');
   const [showAllTeachers, setShowAllTeachers] = useState<boolean>(false);
@@ -165,7 +188,7 @@ export default function AdminTeachersPage() {
     return t.jenjangList.includes(selectedJenjang as EducationLevel);
   });
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (filteredTeachers.length === 0) {
       alert('Tidak ada data guru yang sesuai filter untuk diekspor!');
       return;
@@ -207,6 +230,7 @@ export default function AdminTeachersPage() {
     sheetData.push([]);
     sheetData.push(['', '', '', '', '', '', '', 'TOTAL GURU AKTIF:', `${filteredTeachers.filter((t) => t.isActive).length} Pengajar`]);
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
     worksheet['!cols'] = [
@@ -226,7 +250,7 @@ export default function AdminTeachersPage() {
     XLSX.writeFile(workbook, `SIMOGU_Master_Guru_${selectedJenjang || 'Semua'}_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const templateRows = [
       {
         'Kode Guru': 'GRU-001',
@@ -251,6 +275,7 @@ export default function AdminTeachersPage() {
       },
     ];
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.json_to_sheet(templateRows);
 
     worksheet['!cols'] = [
@@ -279,6 +304,7 @@ export default function AdminTeachersPage() {
     reader.onload = async (evt) => {
       try {
         const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+        const XLSX = await import('xlsx');
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
@@ -458,7 +484,7 @@ export default function AdminTeachersPage() {
     });
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formCode || !formName || !formPhone || !formSubjectsText) {
       alert('Harap lengkapi kode guru, nama, WhatsApp, dan mata pelajaran!');
@@ -470,7 +496,18 @@ export default function AdminTeachersPage() {
       .map((s) => s.trim())
       .filter(Boolean);
 
+    const formattedPhone = formPhone.replace(/^0/, '62');
+
     if (editingTeacher) {
+      await apiClient.patch(`/api/v1/teachers/${editingTeacher.id}`, {
+        teacherCode: formCode,
+        fullName: formName,
+        nip: formNip || undefined,
+        gender: formGender,
+        whatsappNumber: formattedPhone,
+        subject: parsedSubjects.join(', '),
+      });
+
       setTeachers((prev) =>
         prev.map((t) =>
           t.id === editingTeacher.id
@@ -480,7 +517,7 @@ export default function AdminTeachersPage() {
                 fullName: formName,
                 nip: formNip,
                 gender: formGender,
-                whatsappNumber: formPhone.replace(/^0/, '62'),
+                whatsappNumber: formattedPhone,
                 subjects: parsedSubjects,
                 jenjangList: formJenjangList,
               }
@@ -488,13 +525,24 @@ export default function AdminTeachersPage() {
         ),
       );
     } else {
+      const res = await apiClient.post('/api/v1/teachers', {
+        teacherCode: formCode,
+        fullName: formName,
+        nip: formNip || undefined,
+        gender: formGender,
+        whatsappNumber: formattedPhone,
+        subject: parsedSubjects.join(', '),
+      });
+
+      const newId = (res.success && res.data && res.data.id) ? res.data.id : String(Date.now());
+
       const newTeacher: TeacherItem = {
-        id: String(Date.now()),
+        id: newId,
         teacherCode: formCode,
         nip: formNip,
         fullName: formName,
         gender: formGender,
-        whatsappNumber: formPhone.replace(/^0/, '62'),
+        whatsappNumber: formattedPhone,
         subjects: parsedSubjects,
         jenjangList: formJenjangList,
         isActive: true,
@@ -513,8 +561,9 @@ export default function AdminTeachersPage() {
     setDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (targetTeacher) {
+      await apiClient.delete(`/api/v1/teachers/${targetTeacher.id}`);
       setTeachers((prev) => prev.filter((t) => t.id !== targetTeacher.id));
     }
     setDeleteModalOpen(false);
@@ -623,9 +672,6 @@ export default function AdminTeachersPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

@@ -6,6 +6,8 @@ import { Footer } from '@/components/footer';
 import { Search, UserCheck, ArrowRight, ArrowLeft, BookOpen, Shield, GraduationCap, Building2, Wrench, Home, Filter, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
+import { apiClient } from '@/lib/api-client';
+
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
 interface PublicTeacher {
@@ -28,24 +30,56 @@ const samplePublicTeachers: PublicTeacher[] = [
 export default function PublicGuruSearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJenjangFilter, setSelectedJenjangFilter] = useState<string>('Semua');
+  const [liveTeachers, setLiveTeachers] = useState<PublicTeacher[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   // Lazy Display: Data is NOT displayed initially until searchQuery is entered OR filter is selected
   const isSearchActive = searchQuery.trim().length > 0 || selectedJenjangFilter !== 'Semua';
 
-  const filteredTeachers = isSearchActive
-    ? samplePublicTeachers.filter((t) => {
-        const matchesQuery =
-          !searchQuery.trim() ||
-          t.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.teacherCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          t.jenjangList.some((j) => j.toLowerCase().includes(searchQuery.toLowerCase()));
+  React.useEffect(() => {
+    if (!isSearchActive) {
+      setLiveTeachers([]);
+      return;
+    }
 
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      const res = await apiClient.get<any[]>(`/api/v1/teachers/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const mapped: PublicTeacher[] = res.data.map((t) => ({
+          id: t.id,
+          teacherCode: t.teacherCode,
+          fullName: t.fullName,
+          subject: t.subject || 'Umum',
+          jenjangList: ['SMA'], // Default jenjang or from class schedules
+        }));
+        setLiveTeachers(mapped);
+      } else if (res.success && Array.isArray(res.data) && res.data.length === 0 && searchQuery.trim()) {
+        setLiveTeachers([]);
+      } else {
+        // Fallback to local sample data if API returned no match or error
+        const fallback = samplePublicTeachers.filter((t) => {
+          const matchesQuery =
+            !searchQuery.trim() ||
+            t.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.teacherCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.subject.toLowerCase().includes(searchQuery.toLowerCase());
+          return matchesQuery;
+        });
+        setLiveTeachers(fallback);
+      }
+      setIsSearching(false);
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, isSearchActive]);
+
+  const filteredTeachers = isSearchActive
+    ? liveTeachers.filter((t) => {
         const matchesJenjang =
           selectedJenjangFilter === 'Semua' ||
           t.jenjangList.includes(selectedJenjangFilter as EducationLevel);
-
-        return matchesQuery && matchesJenjang;
+        return matchesJenjang;
       })
     : [];
 
@@ -72,10 +106,6 @@ export default function PublicGuruSearchPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      {/* Floating Animated Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

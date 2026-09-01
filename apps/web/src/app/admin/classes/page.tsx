@@ -6,9 +6,9 @@ import { ConfirmationModal } from '@/components/confirmation-modal';
 import { DataTable, Column } from '@/components/data-table';
 import { School, Plus, Edit, Trash2, ArrowLeft, Download, Upload, FileSpreadsheet, GraduationCap, Building2, Wrench, Layers } from 'lucide-react';
 import Link from 'next/link';
-import * as XLSX from 'xlsx';
 import { Footer } from '@/components/footer';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
@@ -43,6 +43,32 @@ export default function AdminClassesPage() {
   const [classes, setClasses] = useState<ClassItem[]>(sampleClasses);
   const [selectedJenjang, setSelectedJenjang] = useState<string>('Semua');
 
+  const fetchLiveClasses = async () => {
+    const res = await apiClient.get<any>('/api/v1/classes?limit=100');
+    if (res.success && res.data && Array.isArray(res.data.items) && res.data.items.length > 0) {
+      const mapped: ClassItem[] = res.data.items.map((c: any) => {
+        let jenjang: EducationLevel = 'SMA';
+        if (c.grade && ['7', '8', '9'].includes(String(c.grade))) jenjang = 'SMP';
+        else if (c.major && (c.major.includes('TKJ') || c.major.includes('RPL') || c.major.includes('Kejuruan'))) jenjang = 'SMK';
+
+        return {
+          id: c.id,
+          name: c.name,
+          grade: String(c.grade || '10'),
+          jenjang: jenjang,
+          major: c.major || '',
+          homeroomTeacherName: c.homeroomTeacher?.fullName || 'Belum Ditentukan',
+          isActive: c.isActive,
+        };
+      });
+      setClasses(mapped);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchLiveClasses();
+  }, []);
+
   // Real Import State
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [importModalOpen, setImportModalOpen] = useState(false);
@@ -66,7 +92,7 @@ export default function AdminClassesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [targetClass, setTargetClass] = useState<ClassItem | null>(null);
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (filteredClasses.length === 0) {
       alert('Tidak ada data kelas yang sesuai filter untuk diekspor!');
       return;
@@ -93,15 +119,16 @@ export default function AdminClassesPage() {
         c.jenjang,
         c.name,
         `Tingkat ${c.grade}`,
-        c.major || 'Umum',
-        c.homeroomTeacherName || 'Belum Ditugaskan',
-        c.isActive ? 'Aktif' : 'Non-Aktif',
+        c.major || '-',
+        c.homeroomTeacherName || '-',
+        c.isActive ? 'Aktif' : 'Nonaktif',
       ]);
     });
 
     sheetData.push([]);
     sheetData.push(['', '', '', '', '', 'TOTAL ROMBEL KELAS:', `${filteredClasses.length} Kelas`]);
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
     worksheet['!cols'] = [
@@ -119,7 +146,7 @@ export default function AdminClassesPage() {
     XLSX.writeFile(workbook, `SIMOGU_Master_Kelas_${selectedJenjang}_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const templateRows = [
       {
         'Nama Kelas': 'VII A',
@@ -153,6 +180,7 @@ export default function AdminClassesPage() {
       },
     ];
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.json_to_sheet(templateRows);
 
     // Set Column Widths for Optimal Readability
@@ -191,6 +219,7 @@ export default function AdminClassesPage() {
     reader.onload = async (evt) => {
       try {
         const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+        const XLSX = await import('xlsx');
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
@@ -420,27 +449,36 @@ export default function AdminClassesPage() {
       key: 'name',
       header: 'Nama Kelas',
       render: (item) => (
-        <span className="font-bold text-slate-900 dark:text-slate-100">{item.name}</span>
+        <span className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+          <School className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+          {item.name}
+        </span>
       ),
     },
     {
       key: 'grade',
-      header: 'Tingkat & Jurusan',
+      header: 'Tingkat',
       render: (item) => (
-        <div>
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-            Tingkat {item.grade}
-          </span>
-          <span className="ml-2 text-xs text-slate-500 font-semibold">({item.major || 'Umum'})</span>
-        </div>
+        <span className="font-bold text-slate-700 dark:text-slate-300">
+          Kelas {item.grade}
+        </span>
+      ),
+    },
+    {
+      key: 'major',
+      header: 'Jurusan / Peminatan',
+      render: (item) => (
+        <span className="text-slate-600 dark:text-slate-300 font-medium">
+          {item.major || '-'}
+        </span>
       ),
     },
     {
       key: 'homeroomTeacherName',
       header: 'Wali Kelas',
       render: (item) => (
-        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-          {item.homeroomTeacherName || 'Belum Ditugaskan'}
+        <span className="font-medium text-slate-900 dark:text-slate-100">
+          {item.homeroomTeacherName || 'Belum Ditentukan'}
         </span>
       ),
     },
@@ -470,9 +508,6 @@ export default function AdminClassesPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 interface CompactMetroTile {
   id: string;
@@ -31,12 +32,12 @@ interface CompactMetroTile {
   iconColor: string;
 }
 
-const compactTiles: CompactMetroTile[] = [
+const defaultTiles: CompactMetroTile[] = [
   {
     id: 'schedules',
     title: 'Jadwal Mengajar',
-    metric: '48 Jam',
-    subtitle: '12 Rombel (SMP/SMA/SMK)',
+    metric: '144 Jam',
+    subtitle: '6 Rombel (SMP/SMA/SMK)',
     href: '/admin/schedules',
     icon: Calendar,
     accentGradient: 'border-l-blue-500 hover:border-l-blue-600',
@@ -46,8 +47,8 @@ const compactTiles: CompactMetroTile[] = [
   {
     id: 'teachers',
     title: 'Master Data Guru',
-    metric: '36 Guru',
-    subtitle: 'Multi-Jenjang & Mapel',
+    metric: '10 Guru',
+    subtitle: 'Pengajar Aktif Terdaftar',
     href: '/admin/teachers',
     icon: UserCheck,
     accentGradient: 'border-l-emerald-500 hover:border-l-emerald-600',
@@ -57,8 +58,8 @@ const compactTiles: CompactMetroTile[] = [
   {
     id: 'classes',
     title: 'Master Data Kelas',
-    metric: '18 Kelas',
-    subtitle: '18 Wali Kelas',
+    metric: '6 Kelas',
+    subtitle: 'Rombongan Belajar',
     href: '/admin/classes',
     icon: Building2,
     accentGradient: 'border-l-amber-500 hover:border-l-amber-600',
@@ -68,7 +69,7 @@ const compactTiles: CompactMetroTile[] = [
   {
     id: 'approvals',
     title: 'Persetujuan Approval',
-    metric: '3 Pending',
+    metric: '0 Pending',
     subtitle: 'Butuh Tindakan Admin',
     href: '/admin/approvals',
     icon: CheckCircle2,
@@ -79,7 +80,7 @@ const compactTiles: CompactMetroTile[] = [
   {
     id: 'reports',
     title: 'Laporan Presensi',
-    metric: '98.4%',
+    metric: '100%',
     subtitle: 'Tingkat Kehadiran Guru',
     href: '/admin/reports',
     icon: TrendingUp,
@@ -101,12 +102,39 @@ const compactTiles: CompactMetroTile[] = [
 ];
 
 export default function AdminDashboardPage() {
+  const [tiles, setTiles] = React.useState<CompactMetroTile[]>(defaultTiles);
+
+  React.useEffect(() => {
+    async function loadMetrics() {
+      const res = await apiClient.get('/api/v1/dashboard/metrics');
+      if (res.success && res.data) {
+        const m = res.data;
+        setTiles((prev) =>
+          prev.map((t) => {
+            if (t.id === 'teachers' && m.activeTeachers !== undefined) {
+              return { ...t, metric: `${m.activeTeachers} Guru` };
+            }
+            if (t.id === 'schedules' && m.todaySchedules !== undefined) {
+              return { ...t, metric: `${m.todaySchedules} Jam` };
+            }
+            if (t.id === 'approvals' && m.pendingChangeRequests !== undefined) {
+              return { ...t, metric: `${m.pendingChangeRequests} Pending` };
+            }
+            if (t.id === 'whatsapp') {
+              return {
+                ...t,
+                metric: m.failedWhatsAppMessages > 0 ? `${m.failedWhatsAppMessages} Gagal` : 'Terhubung',
+              };
+            }
+            return t;
+          }),
+        );
+      }
+    }
+    loadMetrics();
+  }, []);
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      {/* Floating Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-5 relative z-10">
 
         {/* Compact Header Bar */}
@@ -139,12 +167,13 @@ export default function AdminDashboardPage() {
 
         {/* Minimal Compact Metro Tiles Grid (2 cols on mobile, 3 on tablet/desktop) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          {compactTiles.map((tile) => {
+          {tiles.map((tile) => {
             const IconComp = tile.icon;
             return (
               <Link
                 key={tile.id}
                 href={tile.href}
+                prefetch={true}
                 className={`glass-card p-3.5 sm:p-4 rounded-2xl border-l-4 ${tile.accentGradient} hover:shadow-lg hover:scale-[1.02] active:scale-95 transition-all group flex flex-col justify-between space-y-3 cursor-pointer`}
               >
                 {/* Top Row: Icon & Arrow Indicator */}

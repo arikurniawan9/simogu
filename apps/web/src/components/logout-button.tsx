@@ -19,9 +19,10 @@ export function LogoutButton({ size = 'md', showLabel = true }: LogoutButtonProp
       localStorage.removeItem('simogu_token');
       localStorage.removeItem('simogu_user');
       localStorage.removeItem('simogu_refresh_token');
+      document.cookie = 'access_token=; path=/; max-age=0; SameSite=Lax';
     }
     setModalOpen(false);
-    router.replace('/login');
+    router.push('/login');
   };
 
   const iconSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';

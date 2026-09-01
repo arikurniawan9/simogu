@@ -453,9 +453,6 @@ export default function PiketAttendancePage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-4 sm:p-6 relative">
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

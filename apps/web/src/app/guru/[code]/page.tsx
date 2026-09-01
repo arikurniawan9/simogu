@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DataTable, Column } from '@/components/data-table';
 import { Footer } from '@/components/footer';
 import { ArrowLeft, BookOpen, Award, CheckCircle2, Calendar, Shield, Filter, User } from 'lucide-react';
 import Link from 'next/link';
+import { apiClient } from '@/lib/api-client';
 
 interface PublicHistoryItem {
   id: string;
@@ -27,10 +28,52 @@ const sampleHistory: PublicHistoryItem[] = [
 
 export default function PublicTeacherDetailPage({ params }: { params: { code: string } }) {
   const [selectedStatus, setSelectedStatus] = useState<string>('Semua');
+  const [teacherData, setTeacherData] = useState<{
+    fullName: string;
+    subject: string;
+    summary: { present: number; permission: number; sick: number; officialDuty: number };
+    appreciationMessage?: string | null;
+  }>({
+    fullName: 'Memuat Data Guru...',
+    subject: 'Mata Pelajaran',
+    summary: { present: 0, permission: 0, sick: 0, officialDuty: 0 },
+    appreciationMessage: null,
+  });
+  const [historyList, setHistoryList] = useState<PublicHistoryItem[]>(sampleHistory);
+
+  useEffect(() => {
+    async function loadData() {
+      const summaryRes = await apiClient.get<any>(`/api/v1/teachers/public/summary/${params.code}`);
+      if (summaryRes.success && summaryRes.data) {
+        setTeacherData({
+          fullName: summaryRes.data.teacher?.fullName || 'Pengajar SIMOGU',
+          subject: summaryRes.data.teacher?.subject || 'Umum',
+          summary: summaryRes.data.summary || { present: 0, permission: 0, sick: 0, officialDuty: 0 },
+          appreciationMessage: summaryRes.data.appreciationMessage,
+        });
+      }
+
+      const histRes = await apiClient.get<any>(`/api/v1/teachers/public/history/${params.code}`);
+      if (histRes.success && histRes.data && Array.isArray(histRes.data.records) && histRes.data.records.length > 0) {
+        const mapped: PublicHistoryItem[] = histRes.data.records.map((r: any) => ({
+          id: r.id,
+          attendanceDate: r.date,
+          className: r.className,
+          periodNumber: r.periodNumber,
+          periodTime: r.periodTime,
+          subject: r.subject,
+          status: r.status,
+          notes: r.notes,
+        }));
+        setHistoryList(mapped);
+      }
+    }
+    loadData();
+  }, [params.code]);
 
   const filteredHistory = selectedStatus === 'Semua'
-    ? sampleHistory
-    : sampleHistory.filter((h) => h.status === selectedStatus);
+    ? historyList
+    : historyList.filter((h) => h.status === selectedStatus);
 
   const columns: Column<PublicHistoryItem>[] = [
     {
@@ -82,10 +125,6 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      {/* Floating Animated Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}
@@ -124,10 +163,10 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
               </div>
               <div className="min-w-0">
                 <h2 className="text-base sm:text-xl font-extrabold text-slate-900 dark:text-slate-50 truncate">
-                  Drs. Ari Kurniawan, M.Pd.
+                  {teacherData.fullName}
                 </h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5">
-                  <BookOpen className="w-3.5 h-3.5 text-brand-600 shrink-0" /> Mapel: <span className="font-semibold text-slate-700 dark:text-slate-300">Matematika</span>
+                  <BookOpen className="w-3.5 h-3.5 text-brand-600 shrink-0" /> Mapel: <span className="font-semibold text-slate-700 dark:text-slate-300">{teacherData.subject}</span>
                 </p>
               </div>
             </div>
@@ -136,8 +175,10 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
             <div className="p-3 bg-gradient-to-br from-emerald-500 to-brand-700 text-white rounded-xl shadow-md flex items-center gap-3">
               <Award className="w-7 h-7 text-amber-300 shrink-0" />
               <div>
-                <div className="text-xs font-bold">Penghargaan Kehadiran 100%</div>
-                <div className="text-[10px] text-emerald-100">Dedikasi dan kehadiran sempurna mengajar siswa</div>
+                <div className="text-xs font-bold">Penghargaan Kehadiran Pengajar</div>
+                <div className="text-[10px] text-emerald-100">
+                  {teacherData.appreciationMessage || 'Dedikasi dan konsistensi mengajar siswa di sekolah'}
+                </div>
               </div>
             </div>
           </div>
@@ -148,7 +189,7 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
           <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
               <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Total Hadir</div>
-              <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">4</div>
+              <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-0.5">{teacherData.summary.present}</div>
             </div>
             <CheckCircle2 className="w-6 sm:w-8 h-6 sm:h-8 text-emerald-500 opacity-60" />
           </div>
@@ -156,7 +197,7 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
           <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
               <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Izin</div>
-              <div className="text-xl sm:text-2xl font-black text-amber-600 mt-0.5">0</div>
+              <div className="text-xl sm:text-2xl font-black text-amber-600 mt-0.5">{teacherData.summary.permission}</div>
             </div>
             <Calendar className="w-6 sm:w-8 h-6 sm:h-8 text-amber-500 opacity-60" />
           </div>
@@ -164,7 +205,7 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
           <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
               <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Sakit</div>
-              <div className="text-xl sm:text-2xl font-black text-rose-600 mt-0.5">0</div>
+              <div className="text-xl sm:text-2xl font-black text-rose-600 mt-0.5">{teacherData.summary.sick}</div>
             </div>
             <Shield className="w-6 sm:w-8 h-6 sm:h-8 text-rose-500 opacity-60" />
           </div>
@@ -172,7 +213,7 @@ export default function PublicTeacherDetailPage({ params }: { params: { code: st
           <div className="glass-card p-3.5 sm:p-4 rounded-xl flex items-center justify-between">
             <div>
               <div className="text-[11px] sm:text-xs font-semibold text-slate-500">Tugas Dinas</div>
-              <div className="text-xl sm:text-2xl font-black text-sky-600 mt-0.5">0</div>
+              <div className="text-xl sm:text-2xl font-black text-sky-600 mt-0.5">{teacherData.summary.officialDuty}</div>
             </div>
             <BookOpen className="w-6 sm:w-8 h-6 sm:h-8 text-sky-500 opacity-60" />
           </div>

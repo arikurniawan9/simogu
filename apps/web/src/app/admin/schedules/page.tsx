@@ -30,8 +30,8 @@ import {
   UserCheck,
 } from 'lucide-react';
 import Link from 'next/link';
-import * as XLSX from 'xlsx';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
@@ -77,6 +77,44 @@ const sampleSchedules: ScheduleItem[] = [
 export default function AdminSchedulesPage() {
   const [schedules, setSchedules] = useState<ScheduleItem[]>(sampleSchedules);
 
+  const fetchLiveSchedules = async () => {
+    const res = await apiClient.get<any>('/api/v1/schedules?limit=200');
+    if (res.success && res.data && Array.isArray(res.data.items) && res.data.items.length > 0) {
+      const dayMap: Record<number, string> = {
+        1: 'Senin',
+        2: 'Selasa',
+        3: 'Rabu',
+        4: 'Kamis',
+        5: 'Jumat',
+        6: 'Sabtu',
+        7: 'Minggu',
+      };
+
+      const mapped: ScheduleItem[] = res.data.items.map((s: any) => {
+        let jenjang: EducationLevel = 'SMA';
+        if (s.class?.grade && ['7', '8', '9'].includes(String(s.class.grade))) jenjang = 'SMP';
+        else if (s.class?.major && (s.class.major.includes('TKJ') || s.class.major.includes('RPL') || s.class.major.includes('Kejuruan'))) jenjang = 'SMK';
+
+        return {
+          id: s.id,
+          teacherName: s.teacher?.fullName || 'Guru',
+          className: s.class?.name || 'Kelas',
+          jenjang: jenjang,
+          periodNumber: s.lessonPeriod?.periodNumber || 1,
+          periodTime: s.lessonPeriod ? `${s.lessonPeriod.startTime} - ${s.lessonPeriod.endTime}` : '07:00 - 07:45',
+          dayOfWeek: typeof s.dayOfWeek === 'number' ? dayMap[s.dayOfWeek] || 'Senin' : s.dayOfWeek,
+          subject: s.subject || s.teacher?.subject || 'Pelajaran',
+          isActive: s.isActive,
+        };
+      });
+      setSchedules(mapped);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchLiveSchedules();
+  }, []);
+
   // Filter States
   const [selectedJenjang, setSelectedJenjang] = useState<string>('');
   const [selectedDay, setSelectedDay] = useState<string>('');
@@ -112,7 +150,7 @@ export default function AdminSchedulesPage() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [targetSchedule, setTargetSchedule] = useState<ScheduleItem | null>(null);
 
-  const handleExportExcel = () => {
+  const handleExportExcel = async () => {
     if (filteredSchedules.length === 0) {
       alert('Tidak ada data jadwal yang sesuai filter untuk diekspor!');
       return;
@@ -131,11 +169,12 @@ export default function AdminSchedulesPage() {
 
     // Premium Spreadsheet Banner & Data Rows
     const sheetData: any[][] = [
-      ['SIMOGU - SISTEM MONITORING KEHADIRAN & JADWAL MENGAJAR GURU'],
-      [`LAPORAN REKAPITULASI JADWAL MENGAJAR (${filterLabel.toUpperCase()})`],
-      [`Tanggal Unduh: ${todayStr} | Total: ${filteredSchedules.length} Jam Pelajaran`],
-      [], // Blank separator
-      ['NO', 'JENJANG', 'HARI', 'JAM KE', 'WAKTU PELAJARAN', 'NAMA KELAS', 'NAMA GURU PENGAJAR', 'MATA PELAJARAN'],
+      ['SIMOGU - SISTEM MONITORING KEHADIRAN GURU'],
+      ['PONDOK PESANTREN & YAYASAN PENDIDIKAN AL ITTIHAD'],
+      ['LAPORAN DATA JADWAL MENGAJAR GURU TERPADU'],
+      [`Filter: ${filterLabel} | Tanggal Cetak: ${todayStr} | Total: ${filteredSchedules.length} Jadwal Mengajar`],
+      [], // Empty row separator
+      ['NO', 'JENJANG', 'HARI', 'JAM KE', 'WAKTU', 'KELAS', 'NAMA GURU PENGAJAR', 'MATA PELAJARAN'],
     ];
 
     filteredSchedules.forEach((s, idx) => {
@@ -143,7 +182,7 @@ export default function AdminSchedulesPage() {
         idx + 1,
         s.jenjang,
         s.dayOfWeek,
-        `Jam ${s.periodNumber}`,
+        `Jam ke-${s.periodNumber}`,
         s.periodTime,
         s.className,
         s.teacherName,
@@ -155,6 +194,7 @@ export default function AdminSchedulesPage() {
     sheetData.push([]);
     sheetData.push(['', '', '', '', '', '', 'TOTAL JADWAL:', `${filteredSchedules.length} Pelajaran`]);
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
     // Set Column Widths for Optimal Readability & Professional Layout
@@ -181,7 +221,7 @@ export default function AdminSchedulesPage() {
     XLSX.writeFile(workbook, fileName);
   };
 
-  const handleDownloadTemplate = () => {
+  const handleDownloadTemplate = async () => {
     const templateRows = [
       {
         'Hari': 'Senin',
@@ -227,6 +267,7 @@ export default function AdminSchedulesPage() {
       },
     ];
 
+    const XLSX = await import('xlsx');
     const worksheet = XLSX.utils.json_to_sheet(templateRows);
 
     // Set Column Widths for Optimal Readability
@@ -266,6 +307,7 @@ export default function AdminSchedulesPage() {
     reader.onload = async (evt) => {
       try {
         const data = new Uint8Array(evt.target?.result as ArrayBuffer);
+        const XLSX = await import('xlsx');
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
@@ -489,6 +531,19 @@ export default function AdminSchedulesPage() {
     setShowToday(false);
   };
 
+  const handleOpenDelete = (item: ScheduleItem) => {
+    setTargetSchedule(item);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (targetSchedule) {
+      await apiClient.delete(`/api/v1/schedules/${targetSchedule.id}`);
+      setSchedules((prev) => prev.filter((s) => s.id !== targetSchedule.id));
+    }
+    setDeleteModalOpen(false);
+  };
+
   const isFilterActive = showToday || (selectedJenjang !== '' && selectedDay !== '');
 
   const filteredSchedules = schedules.filter((s) => {
@@ -510,18 +565,6 @@ export default function AdminSchedulesPage() {
         {b.label}
       </span>
     );
-  };
-
-  const handleOpenDelete = (item: ScheduleItem) => {
-    setTargetSchedule(item);
-    setDeleteModalOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (targetSchedule) {
-      setSchedules((prev) => prev.filter((s) => s.id !== targetSchedule.id));
-    }
-    setDeleteModalOpen(false);
   };
 
   const columns: Column<ScheduleItem>[] = [
@@ -594,9 +637,6 @@ export default function AdminSchedulesPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-5 sm:space-y-6 relative z-10">
 
         {/* Header Bar */}

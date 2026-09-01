@@ -8,6 +8,7 @@ import { MessageSquare, RefreshCw, ArrowLeft, Phone, CheckCircle2, AlertTriangle
 import Link from 'next/link';
 import { Footer } from '@/components/footer';
 import { LogoutButton } from '@/components/logout-button';
+import { apiClient } from '@/lib/api-client';
 
 interface WhatsAppLogItem {
   id: string;
@@ -28,6 +29,26 @@ const sampleLogs: WhatsAppLogItem[] = [
 export default function AdminWhatsAppLogsPage() {
   const [logs, setLogs] = useState<WhatsAppLogItem[]>(sampleLogs);
 
+  const fetchLiveLogs = async () => {
+    const res = await apiClient.get<any>('/api/v1/whatsapp/logs?limit=50');
+    if (res.success && res.data && Array.isArray(res.data) && res.data.length > 0) {
+      const mapped: WhatsAppLogItem[] = res.data.map((l: any) => ({
+        id: l.id,
+        teacherName: l.teacher?.fullName || 'Guru',
+        recipientPhone: l.recipientPhone,
+        messageBody: l.messageBody,
+        status: l.status,
+        failureReason: l.failureReason,
+        sentAt: l.sentAt ? new Date(l.sentAt).toLocaleString('id-ID') : new Date().toLocaleString('id-ID'),
+      }));
+      setLogs(mapped);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchLiveLogs();
+  }, []);
+
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [targetLog, setTargetLog] = useState<WhatsAppLogItem | null>(null);
@@ -37,8 +58,9 @@ export default function AdminWhatsAppLogsPage() {
     setModalOpen(true);
   };
 
-  const handleConfirmResend = () => {
+  const handleConfirmResend = async () => {
     if (targetLog) {
+      await apiClient.post(`/api/v1/whatsapp/resend/${targetLog.id}`);
       setLogs((prev) =>
         prev.map((l) =>
           l.id === targetLog.id ? { ...l, status: 'SENT', failureReason: undefined } : l,
@@ -117,10 +139,6 @@ export default function AdminWhatsAppLogsPage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-4 sm:p-6 relative">
-      {/* Floating Animated Ambient Blobs */}
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-6xl mx-auto space-y-6 relative z-10">
 
         {/* Header Bar */}

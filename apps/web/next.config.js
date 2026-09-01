@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@simogu/types'],
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   output: process.env.NEXT_STANDALONE ? 'standalone' : undefined,
   eslint: {
     ignoreDuringBuilds: true,

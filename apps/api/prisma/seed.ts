@@ -60,6 +60,18 @@ async function main() {
     },
   });
 
+  const ketuaPiket = await prisma.user.upsert({
+    where: { username: 'ketuapiket' },
+    update: {},
+    create: {
+      username: 'ketuapiket',
+      email: 'ketuapiket@simogu.sch.id',
+      passwordHash,
+      fullName: 'Drs. H. Ahmad Dahlan, M.Pd. (Ketua Piket)',
+      role: Role.KETUA_PIKET,
+    },
+  });
+
   // 3. Seed Teachers (10 Teachers)
   console.log('👨‍🏫 Seeding 10 Teachers...');
 

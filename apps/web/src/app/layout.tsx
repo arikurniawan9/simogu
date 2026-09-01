@@ -39,9 +39,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className="font-sans antialiased min-h-screen pb-20 md:pb-0">
+      <body className="font-sans antialiased min-h-screen pb-20 md:pb-0 relative overflow-x-hidden">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
+          {/* Persistent Ambient Background Blobs for 60fps GPU smoothness across route transitions */}
+          <div className="ambient-blob-1 pointer-events-none" aria-hidden="true" />
+          <div className="ambient-blob-2 pointer-events-none" aria-hidden="true" />
+          
+          <main className="relative z-10 min-h-screen">
+            {children}
+          </main>
           <PwaInstaller />
           <BottomNav />
         </ThemeProvider>

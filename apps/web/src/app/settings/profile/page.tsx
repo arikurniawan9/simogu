@@ -57,6 +57,7 @@ export default function ProfilePage() {
     const role = user.role.toLowerCase();
     if (role === 'admin') return '/admin/dashboard';
     if (role === 'superadmin' || role === 'super_admin') return '/superadmin/dashboard';
+    if (role === 'ketua_piket' || role === 'ketuapiket') return '/ketua-piket/dashboard';
     if (role === 'piket') return '/piket/dashboard';
     if (role === 'guru') return '/guru/dashboard';
     return '/'; // fallback
@@ -111,6 +112,7 @@ export default function ProfilePage() {
       case 'ADMIN': return 'Administrator';
       case 'SUPERADMIN':
       case 'SUPER_ADMIN': return 'Super Administrator';
+      case 'KETUA_PIKET': return 'Ketua Petugas Piket';
       case 'PIKET': return 'Guru Piket';
       case 'GURU': return 'Guru / Pengajar';
       default: return role;
@@ -122,6 +124,7 @@ export default function ProfilePage() {
       case 'ADMIN': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border-blue-200 dark:border-blue-800';
       case 'SUPERADMIN':
       case 'SUPER_ADMIN': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 border-purple-200 dark:border-purple-800';
+      case 'KETUA_PIKET': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800';
       case 'PIKET': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800';
       default: return 'bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300 border-slate-200 dark:border-slate-800';
     }
@@ -129,9 +132,6 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen transition-colors duration-500 p-3 sm:p-6 relative">
-      <div className="ambient-blob-1" />
-      <div className="ambient-blob-2" />
-
       <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 relative z-10">
         
         {/* Header Bar */}
