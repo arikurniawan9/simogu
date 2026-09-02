@@ -37,3 +37,8 @@ apps/mobile/.pub-cache/
 # Coverage & Testing
 coverage/
 .nyc_output/
+
+# Uploaded Files
+uploads/
+**/uploads/
+

@@ -243,8 +243,12 @@ model AttendanceRecord {
   status         AttendanceStatus
   recordedById   String
   notes          String?
+  attachmentUrl  String?
+  attachmentType String?
+  attachmentName String?
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+
 
   schedule        Schedule                  @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   recordedBy      User                      @relation("RecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
@@ -421,8 +425,12 @@ model PengajianAttendance {
   badalTeacherId      String?          // Ustadz Badal / Pengganti jika status BADAL/IZIN
   badalTeacherName    String?          // Nama ustadz pengganti jika dari luar
   notes               String?
+  attachmentUrl       String?
+  attachmentType      String?
+  attachmentName      String?
   recordedById        String
   createdAt           DateTime         @default(now())
+
   updatedAt           DateTime         @updatedAt
 
   schedule            PengajianSchedule @relation(fields: [pengajianScheduleId], references: [id], onDelete: Cascade)

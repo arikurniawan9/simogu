@@ -25,6 +25,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
+import { AttachmentUploader, AttachmentData } from '@/components/attachment-uploader';
 
 interface PengajianScheduleRow {
   scheduleId: string;
@@ -36,8 +37,10 @@ interface PengajianScheduleRow {
   currentStatus: string;
   badalTeacherName: string;
   notes: string;
+  attachment?: AttachmentData | null;
   isSaved?: boolean;
 }
+
 
 const mockInitialSchedules: PengajianScheduleRow[] = [
   {
@@ -177,6 +180,12 @@ export default function PengajianAttendancePage() {
     );
   };
 
+  const handleAttachmentChange = (scheduleId: string, attachment: AttachmentData | null) => {
+    setSchedules((prev) =>
+      prev.map((s) => (s.scheduleId === scheduleId ? { ...s, attachment } : s))
+    );
+  };
+
   const handleMarkAllPresent = () => {
     setSchedules((prev) =>
       prev.map((s) => (s.session === selectedSession ? { ...s, currentStatus: 'PRESENT' } : s))
@@ -188,8 +197,22 @@ export default function PengajianAttendancePage() {
   };
 
   const handleSaveAttendance = async () => {
-    setIsSaving(true);
     const activeRows = schedules.filter((s) => s.session === selectedSession);
+
+    // Strict validation: SAKIT or OFFICIAL_DUTY requires an attachment!
+    for (const row of activeRows) {
+      if ((row.currentStatus === 'SICK' || row.currentStatus === 'OFFICIAL_DUTY') && !row.attachment?.url) {
+        setModalTitle('Lampiran Surat Wajib');
+        setModalDesc(
+          `Halaqah "${row.halaqah.name}" dengan status ${row.currentStatus === 'SICK' ? 'Sakit' : 'Tugas Dinas / Badal'} wajib melampirkan surat keterangan resmi (Gambar JPG/PNG atau Dokumen PDF).`,
+        );
+        setModalVariant('danger');
+        setModalOpen(true);
+        return;
+      }
+    }
+
+    setIsSaving(true);
 
     try {
       for (const row of activeRows) {
@@ -200,8 +223,12 @@ export default function PengajianAttendancePage() {
           status: row.currentStatus,
           badalTeacherName: row.badalTeacherName || undefined,
           notes: row.notes || undefined,
+          attachmentUrl: row.attachment?.url || undefined,
+          attachmentType: row.attachment?.type || undefined,
+          attachmentName: row.attachment?.name || undefined,
         });
       }
+
 
       setModalTitle('Presensi Berhasil Disimpan');
       setModalDesc(`Presensi pengajian sesi ${selectedSession} untuk tanggal ${selectedDate} telah tersimpan dan tercatat di sistem.`);
@@ -437,6 +464,23 @@ export default function PengajianAttendancePage() {
                       />
                     </div>
                   )}
+
+                  {/* Mandatory Attachment for SAKIT or TUGAS_DINAS / BADAL */}
+                  {(row.currentStatus === 'SICK' || row.currentStatus === 'OFFICIAL_DUTY') && (
+                    <div className="p-3.5 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 space-y-2">
+                      <AttachmentUploader
+                        label={
+                          row.currentStatus === 'SICK'
+                            ? 'Lampirkan Surat Keterangan Sakit / Dokter (Wajib)'
+                            : 'Lampirkan Surat Tugas Dinas / Penugasan Badal (Wajib)'
+                        }
+                        required={true}
+                        value={row.attachment}
+                        onChange={(att) => handleAttachmentChange(row.scheduleId, att)}
+                      />
+                    </div>
+                  )}
+
 
                   {/* Optional Notes */}
                   <div>

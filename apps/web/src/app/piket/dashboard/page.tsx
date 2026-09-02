@@ -27,6 +27,7 @@ import {
   Clock,
 } from 'lucide-react';
 import Link from 'next/link';
+import { AttachmentUploader, AttachmentData } from '@/components/attachment-uploader';
 
 export type EducationLevel = 'SMP' | 'SMA' | 'SMK';
 
@@ -40,7 +41,9 @@ interface PiketScheduleItem {
   periodNumber: number;
   periodTime: string;
   attendanceStatus: AttendanceStatus;
+  attachment?: AttachmentData | null;
 }
+
 
 // Default jadwal kelas -> otomatis HADIR
 const generateClassSchedule = (className: string, jenjang: EducationLevel, date: string): PiketScheduleItem[] => {
@@ -91,7 +94,9 @@ export default function PiketDashboardPage() {
   const [shiftFinished, setShiftFinished] = useState(false);
   
   const [confirmItem, setConfirmItem] = useState<{ id: string; status: AttendanceStatus } | null>(null);
+  const [currentAttachment, setCurrentAttachment] = useState<AttachmentData | null>(null);
   const [workflowActionType, setWorkflowActionType] = useState<'SIMPAN' | 'AJUKAN_EDIT' | 'KIRIM_EDIT' | 'FINISH_SHIFT' | 'CONTINUE_SHIFT' | 'START_SHIFT' | 'START_EDIT_SHIFT' | null>(null);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalDesc, setModalDesc] = useState('');
@@ -271,9 +276,17 @@ export default function PiketDashboardPage() {
 
   const handleSelectAction = (id: string, status: AttendanceStatus) => {
     setConfirmItem({ id, status });
+    setCurrentAttachment(null);
     const labelMap: Record<string, string> = { HADIR: 'Hadir', PENDING: 'Pending', IZIN: 'Izin', SAKIT: 'Sakit', TUGAS_DINAS: 'Tugas Dinas', TANPA_KETERANGAN: 'Tanpa Keterangan' };
-    setModalTitle(`Konfirmasi: Set ${labelMap[status]}`);
-    setModalDesc(`Anda akan mengubah status kehadiran guru ini menjadi "${labelMap[status]}". Lanjutkan?`);
+
+    if (status === 'SAKIT' || status === 'TUGAS_DINAS') {
+      setModalTitle(`Lampirkan Bukti: ${labelMap[status]}`);
+      setModalDesc(`Status ${labelMap[status]} memerlukan lampiran surat resmi (surat tugas atau surat keterangan sakit/dokter) berupa Gambar (JPG/PNG) atau Dokumen PDF.`);
+    } else {
+      setModalTitle(`Konfirmasi: Set ${labelMap[status]}`);
+      setModalDesc(`Anda akan mengubah status kehadiran guru ini menjadi "${labelMap[status]}". Lanjutkan?`);
+    }
+
     setModalVariant(
       status === 'HADIR' ? 'success' : 
       status === 'TANPA_KETERANGAN' ? 'danger' :
@@ -365,21 +378,28 @@ export default function PiketDashboardPage() {
     }
 
     if (confirmItem) {
+      if ((confirmItem.status === 'SAKIT' || confirmItem.status === 'TUGAS_DINAS') && !currentAttachment?.url) {
+        alert(`Status ${confirmItem.status === 'SAKIT' ? 'Sakit' : 'Tugas Dinas'} wajib melampirkan surat keterangan (Gambar JPG/PNG atau Dokumen PDF) sebelum absensi dapat disimpan.`);
+        return;
+      }
+
       setSchedulesByClass((prev) => {
         const classSchedule = prev[selectedClass] || [];
         return {
           ...prev,
           [selectedClass]: classSchedule.map((s) => 
-            s.id === confirmItem.id ? { ...s, attendanceStatus: confirmItem.status } : s
+            s.id === confirmItem.id ? { ...s, attendanceStatus: confirmItem.status, attachment: currentAttachment } : s
           )
         };
       });
       setConfirmItem(null);
+      setCurrentAttachment(null);
       setModalOpen(false);
     }
   };
 
   const statusBadges: Record<string, { label: string; cls: string }> = {
+
     HADIR: { label: 'Hadir', cls: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' },
     IZIN: { label: 'Izin', cls: 'bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border-amber-200 dark:border-amber-800' },
     SAKIT: { label: 'Sakit', cls: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-700' },
@@ -426,10 +446,23 @@ export default function PiketDashboardPage() {
       render: (item) => {
         const b = statusBadges[item.attendanceStatus] || statusBadges.HADIR;
         return (
-          <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${b.cls}`}>
-            {b.label}
-          </span>
+          <div className="flex flex-col items-start gap-1">
+            <span className={`px-2.5 py-0.5 rounded-md text-xs font-semibold border ${b.cls}`}>
+              {b.label}
+            </span>
+            {item.attachment && (
+              <a
+                href={item.attachment.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded border border-emerald-300 dark:border-emerald-800 hover:underline"
+              >
+                📎 {item.attachment.type === 'PDF' ? 'PDF' : 'Gambar'}
+              </a>
+            )}
+          </div>
         );
+
       },
     },
     {
@@ -707,13 +740,26 @@ export default function PiketDashboardPage() {
         onClose={() => {
           setModalOpen(false);
           setPendingJenjang(null);
+          setCurrentAttachment(null);
         }}
         onConfirm={handleConfirmRecord}
         title={modalTitle}
         description={modalDesc}
         variant={modalVariant}
         confirmText={modalConfirmText}
-      />
+      >
+        {confirmItem && (confirmItem.status === 'SAKIT' || confirmItem.status === 'TUGAS_DINAS') && (
+          <div className="pt-1">
+            <AttachmentUploader
+              label={confirmItem.status === 'SAKIT' ? 'Surat Keterangan Sakit (Wajib Diunggah)' : 'Surat Tugas Dinas (Wajib Diunggah)'}
+              required={true}
+              value={currentAttachment}
+              onChange={setCurrentAttachment}
+            />
+          </div>
+        )}
+      </ConfirmationModal>
+
     </div>
   );
 }

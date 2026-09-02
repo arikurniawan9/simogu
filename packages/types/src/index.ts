@@ -99,7 +99,19 @@ export interface PengajianAttendanceItem {
   badalTeacherId?: string | null;
   badalTeacherName?: string | null;
   notes?: string | null;
+
   recordedById: string;
+  attachmentUrl?: string | null;
+  attachmentType?: string | null;
+  attachmentName?: string | null;
   schedule?: PengajianScheduleItem;
 }
+
+export interface AttendanceAttachment {
+  url: string;
+  name: string;
+  type: 'IMAGE' | 'PDF';
+  size?: number;
+}
+
 

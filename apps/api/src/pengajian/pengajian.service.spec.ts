@@ -156,6 +156,7 @@ describe('PengajianService Unit Tests', () => {
           status: AttendanceStatus.OFFICIAL_DUTY,
           badalTeacherName: 'Ust. Zulkifli (Badal)',
           notes: 'Ustadz utama izin tugas dakwah',
+          attachmentUrl: '/api/v1/storage/files/surat_tugas.pdf',
         },
         'user-piket-1',
       );
@@ -164,6 +165,26 @@ describe('PengajianService Unit Tests', () => {
       expect(result.badalTeacherName).toBe('Ust. Zulkifli (Badal)');
       expect(result.status).toBe(AttendanceStatus.OFFICIAL_DUTY);
     });
+
+    it('should reject SICK or OFFICIAL_DUTY without attachment', async () => {
+      mockPrisma.pengajianSchedule.findUnique.mockResolvedValue({
+        id: 'sch-1',
+        session: PengajianSession.PAGI,
+      });
+
+      await expect(
+        service.recordAttendance(
+          {
+            pengajianScheduleId: 'sch-1',
+            attendanceDate: '2026-09-02',
+            session: PengajianSession.PAGI,
+            status: AttendanceStatus.SICK,
+          },
+          'user-piket-1',
+        ),
+      ).rejects.toThrow(/wajib melampirkan surat keterangan/);
+    });
+
   });
 
   describe('Dashboard Metrics & Stats', () => {

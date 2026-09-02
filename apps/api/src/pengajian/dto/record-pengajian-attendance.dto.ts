@@ -34,4 +34,20 @@ export class RecordPengajianAttendanceDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiProperty({ example: '/api/v1/storage/files/surat_sakit_ustadz.pdf', required: false, description: 'URL lampiran surat sakit atau surat tugas' })
+  @IsOptional()
+  @IsString()
+  attachmentUrl?: string;
+
+  @ApiProperty({ example: 'PDF', required: false, description: 'Tipe lampiran (IMAGE atau PDF)' })
+  @IsOptional()
+  @IsString()
+  attachmentType?: string;
+
+  @ApiProperty({ example: 'surat_tugas_pesantren.pdf', required: false, description: 'Nama asli file lampiran' })
+  @IsOptional()
+  @IsString()
+  attachmentName?: string;
 }
+

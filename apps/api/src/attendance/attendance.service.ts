@@ -37,6 +37,15 @@ export class AttendanceService {
       throw new NotFoundException('Satu atau lebih jadwal mengajar tidak ditemukan atau tidak aktif');
     }
 
+    if (
+      (dto.status === AttendanceStatus.SICK || dto.status === AttendanceStatus.OFFICIAL_DUTY) &&
+      !dto.attachmentUrl
+    ) {
+      throw new BadRequestException(
+        `Status ${dto.status === AttendanceStatus.SICK ? 'Sakit' : 'Tugas Dinas'} wajib melampirkan surat keterangan (surat sakit/surat tugas) dalam format Gambar atau PDF.`,
+      );
+    }
+
     const createdRecords: any[] = [];
 
     // Transaction for bulk recording
@@ -64,8 +73,12 @@ export class AttendanceService {
             attendanceDate,
             status: dto.status,
             notes: dto.notes,
+            attachmentUrl: dto.attachmentUrl,
+            attachmentType: dto.attachmentType,
+            attachmentName: dto.attachmentName,
             recordedById: recordedByUserId || (await this.getFallbackAdminId(tx)),
           },
+
           include: {
             schedule: {
               include: {

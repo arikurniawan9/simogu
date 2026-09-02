@@ -17,7 +17,9 @@ interface ConfirmationModalProps {
   cancelText?: string;
   variant?: ModalVariant;
   isLoading?: boolean;
+  children?: React.ReactNode;
 }
+
 
 export function ConfirmationModal({
   isOpen,
@@ -29,7 +31,9 @@ export function ConfirmationModal({
   cancelText = 'Batal',
   variant = 'warning',
   isLoading = false,
+  children,
 }: ConfirmationModalProps) {
+
   // Tutup dengan Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -127,9 +131,12 @@ export function ConfirmationModal({
             <h3 id="modal-title" className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-2">
               {title}
             </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
               {description}
             </p>
+
+            {children && <div className="mb-4">{children}</div>}
+
 
             {/* Actions */}
             <div className="flex items-center justify-end gap-2.5">

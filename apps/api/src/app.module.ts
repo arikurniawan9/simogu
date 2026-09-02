@@ -14,6 +14,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { ReportsModule } from './reports/reports.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PengajianModule } from './pengajian/pengajian.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -31,7 +32,9 @@ import { PengajianModule } from './pengajian/pengajian.module';
     ReportsModule,
     NotificationsModule,
     PengajianModule,
+    StorageModule,
   ],
+
   controllers: [HealthController],
   providers: [],
 })

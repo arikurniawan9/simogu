@@ -234,6 +234,9 @@ export class PengajianService {
         status: att ? att.status : null,
         badalTeacherName: att ? att.badalTeacherName : null,
         notes: att ? att.notes : null,
+        attachmentUrl: att ? att.attachmentUrl : null,
+        attachmentType: att ? att.attachmentType : null,
+        attachmentName: att ? att.attachmentName : null,
         recordedBy: att ? att.recordedBy : null,
       };
     });
@@ -247,6 +250,15 @@ export class PengajianService {
 
     if (!schedule) {
       throw new NotFoundException('Jadwal pengajian tidak ditemukan');
+    }
+
+    if (
+      (dto.status === AttendanceStatus.SICK || dto.status === AttendanceStatus.OFFICIAL_DUTY) &&
+      !dto.attachmentUrl
+    ) {
+      throw new BadRequestException(
+        `Status ${dto.status === AttendanceStatus.SICK ? 'Sakit' : 'Tugas Dinas / Badal'} wajib melampirkan surat keterangan (surat sakit/surat tugas) dalam format Gambar atau PDF.`,
+      );
     }
 
     const date = new Date(dto.attendanceDate);
@@ -265,6 +277,9 @@ export class PengajianService {
         badalTeacherId: dto.badalTeacherId,
         badalTeacherName: dto.badalTeacherName,
         notes: dto.notes,
+        attachmentUrl: dto.attachmentUrl,
+        attachmentType: dto.attachmentType,
+        attachmentName: dto.attachmentName,
         recordedById: userId,
       },
       create: {
@@ -275,8 +290,12 @@ export class PengajianService {
         badalTeacherId: dto.badalTeacherId,
         badalTeacherName: dto.badalTeacherName,
         notes: dto.notes,
+        attachmentUrl: dto.attachmentUrl,
+        attachmentType: dto.attachmentType,
+        attachmentName: dto.attachmentName,
         recordedById: userId,
       },
+
       include: {
         schedule: {
           include: {
